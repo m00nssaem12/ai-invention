@@ -42,8 +42,8 @@ header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom
 .step-title .chip{background:var(--soft);border-radius:999px;padding:2px 12px;font-size:14px;color:var(--accent);font-weight:700}
 .lead{color:var(--sub);margin:0 0 18px}
 label.f{display:block;font-weight:700;margin:14px 0 6px}
-input[type=text],textarea,select{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;outline:none;transition:border-color .15s}
-input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent)}
+input[type=text],input[type=password],textarea,select{width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=password]:focus,textarea:focus,select:focus{border-color:var(--accent)}
 textarea{min-height:76px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -371,6 +371,26 @@ body.present .nblinks{display:none}
   .step-title h2{font-size:24px}
   .logo h1{font-size:22px}
 }
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:12px}
+.tool{border:2px solid var(--line);background:#fff;border-radius:16px;padding:10px 12px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.tool span{font-size:28px}.tool b{font-family:Jua;font-weight:400;font-size:19px}.tool small{color:var(--sub);font-size:12.5px;line-height:1.35}.tool i{font-style:normal;font-size:11px;font-weight:800;color:#16786d}
+.tool.on{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.sccard{border:2px solid var(--line);border-radius:14px;padding:10px;background:#fffdf8;display:flex;flex-direction:column;gap:6px}
+.sch{display:flex;gap:8px;align-items:baseline}.scl{font-family:Jua;font-size:26px;color:var(--accent);width:26px}.sch small{color:var(--sub)}.sccard .hint{margin:0}.sccard .btn{align-self:flex-start}
+.dice{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap}.die{flex:1;min-width:150px;border:3px solid var(--ink);border-radius:16px;background:#fff;padding:10px;text-align:center}
+.die small{display:block;color:var(--sub);font-weight:700}.die b{font-family:Jua;font-weight:400;font-size:24px}.plus{font-family:Jua;font-size:32px}
+.ideas{display:grid;gap:10px;margin-top:8px}.idea{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;display:flex;flex-direction:column;gap:6px}
+.idea.pick{border-color:var(--accent2);background:var(--soft2)}.ih2{display:flex;gap:6px}.ih2 .x{border:none;background:none;cursor:pointer;font-size:18px}
+.isrc{color:#7c5cc4;font-weight:700}.irates{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px}.ir{display:inline-flex;align-items:center;gap:2px}.ir>span{margin-right:4px;color:var(--sub);font-weight:700}
+.star{border:none;background:none;font-size:20px;color:var(--line);cursor:pointer;padding:0 1px}.star.on{color:#f2b632}.itot{margin-left:auto;font-family:Jua;font-weight:400;font-size:18px}.idea .btn{align-self:flex-start}.ideago{margin-top:12px;text-align:center}
+.rounds{margin-top:12px;padding:12px;border-radius:14px;border:2px solid var(--line);background:#fff}
+.rounds h4{margin:0 0 8px;font-family:Jua;font-weight:400;font-size:18px}.rounds h4 small{font-family:Pretendard;font-size:12px;color:var(--sub);margin-left:6px}
+.rbars{display:flex;gap:14px;align-items:flex-end;margin:6px 0 10px;overflow-x:auto;padding-bottom:2px}
+.rb{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:74px;font-size:13px}.rb b{font-family:Jua;font-weight:400;font-size:18px}.rb small{color:var(--sub);font-size:11px}
+.rbar{width:44px;height:96px;display:flex;align-items:flex-end;background:var(--line);border-radius:8px;overflow:hidden}.rbar i{display:block;width:100%;background:var(--accent2);border-radius:8px 8px 0 0}.rbar i.live{background:repeating-linear-gradient(45deg,var(--accent2) 0 6px,#6fd3c8 6px 12px)}
+.rmsg{padding:8px 12px;border-radius:10px;font-size:14px;margin-bottom:8px;font-weight:700}.rmsg.up{background:var(--soft2);color:#16786d}.rmsg.down{background:#ffe9e4;color:#b33b20}
+body.present #roundPanel{display:none}
 @media print{
   body{background:#fff}
   body>*:not(#printArea){display:none!important}
@@ -386,7 +406,7 @@ body.present .nblinks{display:none}
 <div class="wrap">
   <header class="top">
     <div class="logo"><div class="bulb">💡</div><div><h1>AI 발명 연구소</h1><small>생활 속 불편을 AI로 해결하는 스마트 발명품 만들기</small></div></div>
-    <div class="team-tag" id="teamTag">우리 모둠</div><a class="btn sm ghost" href="notebook.html" target="_blank" rel="noopener" id="nbTop" title="활동지 열기">📒 활동지</a><button class="btn sm ghost" data-view title="작품 보기 (보기 전용)">👀</button><button class="btn sm ghost" data-teacher title="선생님 현황판">👩‍🏫</button>
+    <div class="team-tag" id="teamTag">우리 모둠</div><a class="btn sm ghost" href="notebook.html" target="_blank" rel="noopener" id="nbTop" title="활동지 열기">📒 활동지</a><button class="btn sm ghost" data-teacher title="선생님 현황판">👩‍🏫</button>
   </header>
   <nav class="stepper" id="stepper"></nav>
   <main class="card" id="main"></main>
@@ -424,11 +444,32 @@ const FIREBASE_CONFIG = {
 
 /* 활동지(AI 발명 연구 노트) 파일 : 이 파일과 같은 폴더에 notebook.html 로 올려 주세요 */
 const NOTEBOOK_URL='notebook.html';
-const STEP_SHEETS=[[0],[1],[2],[3],[4,5],[6],[6]]; // 웹도구 단계 → 활동지 장 (0=표지)
+/* 선생님 화면 마스터 비밀번호 (SHA-256 해시). 현재 비밀번호: 대문자 M, 숫자 0 두 개, 대문자 N (대소문자 구분)
+   바꾸는 법: 이 페이지를 연 뒤 F12 → 콘솔에 sha('master:새비밀번호').then(console.log) 를 입력하고,
+   나온 값을 아래 MASTER_HASH에 붙여 넣으세요. 빈 문자열('')이면 마스터 비밀번호 확인을 하지 않아요. */
+const MASTER_HASH='3965ba492aa6b9951e1db18fe680416872cf1ebda61172f4c95ae3446a6a8da8';
+function masterOK(){if(!MASTER_HASH)return true;try{return sessionStorage.getItem('aiInventLab.master')==='1'}catch(e){return false}}
+function renderMasterGate(){
+  $('#stepper').innerHTML='';$('#teamTag').textContent='👩‍🏫 선생님 모드';
+  $('#main').innerHTML=`<div class="entry"><div class="entry-hero"><div class="big">🔐👩‍🏫</div><h2>선생님 확인</h2><p>선생님 화면은 <b>마스터 비밀번호</b>를 입력해야 열 수 있어요.</p></div>
+  <div class="entry-form"><label class="f">🔑 마스터 비밀번호</label>
+  <input type="password" id="masterPw" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="비밀번호 입력">
+  <div id="masterMsg" class="pickmsg"></div>
+  <button class="btn tea big-btn" data-masterok>확인</button>
+  <button class="link" data-student>← 학생 화면으로</button></div></div>`;
+  setTimeout(()=>{const i=$('#masterPw');if(i)i.focus()},50)}
+let masterBusy=false;
+async function masterCheck(){if(masterBusy)return;const i=$('#masterPw'),m=$('#masterMsg');if(!i)return;masterBusy=true;
+  try{const ok=(await sha('master:'+i.value))===MASTER_HASH;
+    if(ok){try{sessionStorage.setItem('aiInventLab.master','1')}catch(e){}render()}
+    else{await new Promise(r=>setTimeout(r,700));if(m)m.textContent='비밀번호가 맞지 않아요.';i.value='';i.focus()}}
+  catch(e){if(m)m.textContent='확인하지 못했어요. https 주소에서 열었는지 확인해 주세요.'}
+  finally{masterBusy=false}}
+const STEP_SHEETS=[[0],[1],[2],[3],[4],[5,6],[7],[7]]; // 웹도구 단계 → 활동지 장 (0=표지)
 function sheetLinks(){const sh=STEP_SHEETS[S.step]||[];return `<span class="nblinks">${sh.map(n=>`<a class="nb" href="${NOTEBOOK_URL}#p${n}" target="_blank" rel="noopener">📒 ${n?`활동지 ${n}`:'연구 노트 표지'}</a>`).join('')}</span>`}
 const PALETTE=['#ff6b4a','#2bb3a3','#4a7dff','#f2b632','#a259ff','#ff5fa2'];
 const STEPS=[
-  {t:'시작',e:'🚀'},{t:'문제 찾기',e:'🔍'},{t:'AI 설계',e:'📐'},
+  {t:'시작',e:'🚀'},{t:'문제 찾기',e:'🔍'},{t:'아이디어 내기',e:'💡'},{t:'AI 설계',e:'📐'},
   {t:'AI 가르치기',e:'📸'},{t:'작동 시험',e:'⚙️'},{t:'발명 카드',e:'🪪'},{t:'갤러리',e:'🖼️'}
 ];
 const PLACES=['교실','우리 집','급식실','운동장·체육관','복도·계단','등하굣길','도서관'];
@@ -457,10 +498,11 @@ const KEY='aiInventLab.v1', GKEY='aiInventLab.gallery';
 let uid=()=>Math.random().toString(36).slice(2,9);
 const DEVICE_ID=(()=>{try{let d=localStorage.getItem('aiInventLab.device');if(!d){d=uid()+uid();localStorage.setItem('aiInventLab.device',d)}return d}catch(e){return uid()+uid()}})();
 const ACTIVE_MS=3*60*1000; // 이 시간 안에 활동한 기기는 '사용 중'으로 봐요
-function fresh(){return{team:'',members:'',place:'',who:'',when:'',what:'',problem:'',name:'',emoji:'💡',oneline:'',
+function migrateSteps(o){if((o.ver||1)<2){if(o.step>=2)o.step++;o.visited=(o.visited||[]).map(i=>i>=2?i+1:i);o.ver=2}return o}
+function fresh(){return{ver:2,team:'',members:'',place:'',who:'',when:'',what:'',problem:'',name:'',emoji:'💡',oneline:'',
   classes:[mk('🙂','첫 번째',''),mk('🫥','아무것도 없음','')],reflect:{good:'',wrong:'',better:''},test:{ok:0,ng:0},step:0,visited:[0]}}
 function mk(e,n,m,s){return{id:uid(),emoji:e,name:n,msg:m,sound:s||'ding'}}
-function load(){try{const v=JSON.parse(localStorage.getItem(KEY));return v&&v.classes?v:null}catch(e){return null}}
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY));return v&&v.classes?migrateSteps(v):null}catch(e){return null}}
 let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},200);if(typeof syncProgress==='function')syncProgress()}
 let S=load()||fresh();
 const thumbs={}; // classId -> [dataURL]  (학습 사진은 새로고침하면 사라짐)
@@ -477,7 +519,7 @@ function renderStepper(){
 function go(i,force){
   i=Math.max(0,Math.min(STEPS.length-1,i));
   if(!force&&locked(i)&&i>S.step){toast(`🔒 선생님이 ${CTRL.maxStep+1}단계까지만 열어 두셨어요`);return}
-  if(i===4&&!trainedReady()&&!(S.dataSaved&&!isReady())){toast('먼저 4단계에서 모든 종류의 사진을 모아 AI를 가르쳐 주세요!');i=3}
+  if(i===5&&!trainedReady()&&!(S.dataSaved&&!isReady())){toast('먼저 5단계에서 모든 종류의 사진을 모아 AI를 가르쳐 주세요!');i=4}
   if(i!==S.step)logAct(`${i+1}단계 ${STEPS[i].e} ${STEPS[i].t}(으)로 이동했어요`);
   S.step=i;if(!S.visited.includes(i))S.visited.push(i);save();render();window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -485,28 +527,29 @@ function nav(prev=true,next='다음 단계'){
   return `<div class="nav">${prev?`<button class="btn ghost" data-go="${S.step-1}">← 이전</button>`:'<span></span>'}${next?`<button class="btn pri" data-go="${S.step+1}">${next} →</button>`:''}</div>`;
 }
 function render(){
-  mainRunner.stop();stopPreview();if(S.step!==4){endBias();document.body.classList.remove('present')}
+  mainRunner.stop();stopPreview();if(S.step!==5){endBias();document.body.classList.remove('present')}
   if(mode==='student'&&HS){renderHelper();return}
-  if((mode!=='student'||!(S.step===3||S.step===4))&&!document.querySelector('.overlay.try'))stopMedia();
+  if((mode!=='student'||!(S.step===4||S.step===5))&&!document.querySelector('.overlay.try'))stopMedia();
   if(mode==='view'){video.style.display='none';document.body.appendChild(video);renderView();return}
-  if(mode==='teacher'){video.style.display='none';document.body.appendChild(video);renderTeacher();return}
+  if(mode==='teacher'){video.style.display='none';document.body.appendChild(video);if(!masterOK()){renderMasterGate();return}renderTeacher();return}
   if(needEntry()){$('#stepper').innerHTML='';$('#teamTag').textContent='우리 모둠';$('#main').innerHTML=vEntry();const pre=$('#joinCode').value;if(pre.length===6&&!E.meta&&!E.loading)lookupClass();return}
   renderStepper();
-  const m=$('#main');m.innerHTML=[v0,v1,v2,v3,v4,v5,v6][S.step]();
-  if(S.step===2)initPad();
+  const m=$('#main');m.innerHTML=[v0,v1,vIdea,v2,v3,v4,v5,v6][S.step]();
+  if(S.step===3)initPad();
   listenAiImg();listenMyCard();listenCtrl();listenShared();listenInbox();listenHelpers();
   setTimeout(decorateShared,0);
-  if(S.step===3||S.step===4){mountMedia().then(()=>{loadModel();if(S.step===3)startPreview()})}
-  if(S.step===3)renderCollect();
-  if(S.step===4){renderRun();mainRunner.start()}
-  if(S.step===6)renderGallery();
+  if(S.step===4||S.step===5){mountMedia().then(()=>{loadModel();if(S.step===4)startPreview()})}
+  if(S.step===4)renderCollect();
+  if(S.step===5){renderRun();mainRunner.start()}
+  if(S.step===7)renderGallery();
 }
 function title(sub,lead){const s=STEPS[S.step];return `${courseHTML()}<div class="step-title"><h2>${s.e} ${s.t}</h2><span class="chip">${S.step+1}단계 · ${sub}</span>${sheetLinks()}</div><p class="lead">${lead}</p>${applyTipHTML()}`}
 
 /* 연수 체험 코스 */
-const COURSE=[{s:[0],t:'예시 고르기',m:3},{s:[1,2],t:'AI 설계 살펴보기',m:5},{s:[3],t:'AI 가르치기',m:10},{s:[4],t:'작동 시험·실험',m:7},{s:[5,6],t:'카드 제출·갤러리',m:5}];
+const COURSE=[{s:[0],t:'예시 고르기',m:3},{s:[1,2,3],t:'AI 설계 살펴보기',m:5},{s:[4],t:'AI 가르치기',m:10},{s:[5],t:'작동 시험·실험',m:7},{s:[6,7],t:'카드 제출·갤러리',m:5}];
 const APPLY_TIPS=[
   '모둠 4명·기기 1대가 기본이에요. 첫 차시에는 예시 발명품으로 전체 흐름을 한 번 체험하고, 다음 차시에 우리 모둠만의 문제로 다시 시작하면 부담이 적어요.',
+  '스캠퍼·역발상·강제결합법·결점 열거법 중 모둠이 끌리는 기법을 1~2개만 골라도 돼요. 아이디어를 3개 이상 낸 뒤 "AI가 구별하기 쉬운가"까지 따져 고르게 해 주세요. 30분 체험 코스에서는 예시 발명품으로 이 단계를 건너뛰어요.',
   '불편 찾기는 "학교 한 바퀴 관찰"이나 사진 찍어 오기 과제로 하면 아이디어가 구체적이에요. AI가 보고·자세로·듣고 구별할 수 있는 불편인지 함께 점검해 주세요.',
   '"아무것도 없음(조용함)" 종류를 꼭 넣도록 지도해요. 설계도 부품표에 카메라(마이크)를 어디에 달지 정하게 하면 다음 단계에서 촬영 각도를 스스로 고민해요.',
   '실물 준비물이 가장 중요해요(빈 캔, 페트병 등). 종류별 30개 이상, 각도·거리를 바꿔 모으게 하고, 모둠원이 돌아가며 버튼을 누르게 하면 참여도가 올라가요.',
@@ -524,7 +567,7 @@ function vEntry(){const pre=E.code||(new URLSearchParams(location.search).get('c
   <div class="entry-form"><label class="f">🏫 학급 코드</label>
   <div style="display:flex;gap:8px"><input type="text" id="joinCode" class="code-in" maxlength="6" value="${esc(pre)}" placeholder="ABC123" autocomplete="off"><button class="btn tea" data-lookup style="white-space:nowrap">확인</button></div>
   <div id="groupPick">${groupPickHTML()}</div>
-  <button class="link" data-solo>학급 코드 없이 혼자 해 보기</button><button class="link" data-view style="margin-left:12px">👀 완성 작품 보기 (보기 전용)</button></div></div>`}
+  <button class="link" data-solo>학급 코드 없이 혼자 해 보기</button></div></div>`}
 function groupPickHTML(){
   if(E.loading)return '<div class="status">학급을 찾는 중…</div>';
   if(!E.meta)return '';
@@ -546,8 +589,9 @@ function drawPick(){const g=$('#groupPick');if(g)g.innerHTML=groupPickHTML()}
 async function lookupClass(){const inp=$('#joinCode');const code=(inp?inp.value:E.code).trim().toUpperCase();
   if(code.length!==6){toast('학급 코드 6자리를 확인해 주세요.');return}
   E.code=code;E.loading=true;E.meta=null;E.sel=null;drawPick();
-  try{await fbInit();const [m,g,t,hp]=await Promise.all([cRef(code,'meta').get(),cRef(code,'groups').get(),cRef(code,'teams').get(),cRef(code,'helpers').get()]);E.helpers=hp.val()||{};
+  try{await fbInit();const [m,g,t,hp,vm]=await Promise.all([cRef(code,'meta').get(),cRef(code,'groups').get(),cRef(code,'teams').get(),cRef(code,'helpers').get(),cRef(code,'ctrl/viewMode').get()]);E.helpers=hp.val()||{};
     E.loading=false;if(!m.exists()){drawPick();toast('그런 학급 코드가 없어요. 다시 확인해 주세요.');return}
+    if(vm.val()===true){enterViewByCode(code,m.val());return}
     E.meta=m.val();E.groups=g.val()||6;E.teams=t.val()||{};drawPick();
   }catch(e){E.loading=false;drawPick();toast('연결하지 못했어요. 인터넷을 확인해 주세요.')}}
 function teamLabel(){return S.group?`${S.group}모둠${S.nick?' · '+S.nick:''}`:(S.nick||S.team||'')}
@@ -562,7 +606,7 @@ ${joinBox()}
 <div class="tip"><b>스마트 발명품이란?</b> 카메라나 마이크 같은 감각 기관으로 상황을 <b>알아채고</b>, 그에 맞게 <b>스스로 반응</b>하는 발명품이에요. 오늘은 우리가 직접 AI에게 보여 주고 들려주며 가르칠 거예요.</div>
 <div class="nav"><button class="btn ghost" data-reset>🗑️ 새 발명 시작(초기화)</button><button class="btn pri" data-go="1">발명 시작 →</button></div>
 <details class="teacher"><summary>👩‍🏫 선생님 안내</summary>
-2~6단계를 모둠당 기기 1대로 진행하면 약 3~4차시가 걸려요. 예시 발명품을 고르면 2~3단계(문제 찾기, AI 설계)가 자동으로 채워져서 연수나 짧은 체험(30분)에 알맞아요. 입력 내용과 AI 학습 사진은 이 기기에 자동 저장되니, 다음 시간에도 같은 기기를 쓰면 하던 단계부터 이어서 할 수 있어요.</details>`}
+2~7단계를 모둠당 기기 1대로 진행하면 약 3~4차시가 걸려요. 예시 발명품을 고르면 2~4단계(문제 찾기, 아이디어 내기, AI 설계)가 자동으로 채워져서 연수나 짧은 체험(30분)에 알맞아요. 입력 내용과 AI 학습 사진은 이 기기에 자동 저장되니, 다음 시간에도 같은 기기를 쓰면 하던 단계부터 이어서 할 수 있어요.</details>`}
 
 function joinBox(){if(!FIREBASE_CONFIG)return'';
   if(S.classCode)return `<div class="joinbox on">🏫 <b>${esc(S.className)}</b>${S.group?` <span class="gtag">${S.group}모둠</span>`:''} 참여 중 <small>(코드 ${esc(S.classCode)})</small><button class="btn sm ghost" data-leave>나가기</button></div>`;
@@ -581,6 +625,79 @@ function v1(){return title('불편 발견하기','발명은 "불편하다!"는 �
 <div class="sentence"><div class="jua" style="font-size:15px">우리가 해결할 문제</div><div id="probAuto">${esc(problemAuto())}</div></div>
 <div class="tip"><b>좋은 문제 찾기 팁</b> AI가 <b>보고</b>(물건의 종류, 있다/없다), <b>자세로</b>(손 들기, 바른 자세), <b>듣고</b>(박수, 시끄러움) 구별할 수 있는 불편이면 더 좋아요.</div>
 ${nav()}`}
+
+
+/* 1.5 아이디어 내기 (스캠퍼 · 역발상 · 강제결합법 · 결점 열거법) */
+const IDEA_TOOLS=[['scamper','🔄','스캠퍼','바꾸고·합치고·없애며 새 아이디어 만들기'],['reverse','🙃','역발상','당연한 것을 거꾸로 뒤집어 생각하기'],['force','🧩','강제결합법','관계없는 두 가지를 억지로 합치기'],['flaw','🔎','결점 열거법','지금 쓰는 물건의 결점을 찾아 고치기']];
+const SCAMPER=[['S','대체하기','Substitute','카메라를 마이크나 자세 인식으로 바꾸면? 사람이 하던 일을 AI가 대신하면?'],
+  ['C','결합하기','Combine','AI 발명품에 불빛·소리·화면을 합치면? 다른 물건과 하나로 합치면?'],
+  ['A','적용하기','Adapt','다른 곳(집·급식실·운동장)에서 쓰는 비슷한 장치를 가져오면?'],
+  ['M','바꾸기','Modify','크기·모양·소리를 키우거나 줄이거나 바꾸면?'],
+  ['P','다른 용도','Put to other use','이 장치를 다른 문제나 다른 사람을 위해 쓰면?'],
+  ['E','없애기','Eliminate','꼭 필요하지 않은 부품이나 과정을 빼면? 더 간단해지면?'],
+  ['R','거꾸로·다시 배열','Reverse / Rearrange','순서를 바꾸거나 거꾸로 하면?']];
+const REV_FLIPS=['사람이 하던 일을 물건이 대신하기','막는 것 대신 도와주는 것','알려 주기 대신 물어보기','문제가 생긴 뒤 대신 생기기 전에(예방)','가만히 기다리기 대신 먼저 다가가기','나쁜 점을 오히려 좋은 점으로'];
+const FORCE_A=['우산','실내화','시계','문','의자','가방','컵','거울','칠판','화분','책상','신호등','자전거','모자','칫솔','장난감 블록'];
+const FORCE_B=['물건 종류 알아보기 👀','손 든 모습·자세 알아보기 🧍','박수·소리 듣기 👂','있는지 없는지 알아보기 🔍','말로 알려 주기 🔊','불빛으로 알려 주기 💡','소리 크기 알아보기 📢'];
+function ideaP(){const I=S.idea=S.idea||{};I.tool=I.tool||'scamper';I.ideas=I.ideas||[];I.sc=I.sc||{};I.rev=Object.assign({now:'',flip:'',idea:''},I.rev);I.frc=Object.assign({a:'',b:'',idea:''},I.frc);I.flaw=Object.assign({item:'',f0:'',f1:'',f2:'',idea:''},I.flaw);I.reason=I.reason||'';I.pick=I.pick||null;I.used=I.used||[];return I}
+function ideaGet(path){let o=ideaP();for(const k of path.split('.')){if(o==null)return'';o=o[k]}return o==null?'':o}
+function ideaSet(path,v){const p=path.split('.');let o=ideaP();for(let i=0;i<p.length-1;i++){o[p[i]]=o[p[i]]||{};o=o[p[i]]}o[p[p.length-1]]=v}
+function ideaSummary(){const I=S.idea;if(!I)return{n:0,tools:[],pick:'',reason:''};const pk=(I.ideas||[]).find(x=>x.id===I.pick);
+  return{n:(I.ideas||[]).length,tools:(I.used||[]).map(k=>(IDEA_TOOLS.find(t=>t[0]===k)||[])[2]).filter(Boolean),pick:pk?pk.text:'',reason:I.reason||''}}
+function vIdea(){return title('아이디어 기법','불편을 해결할 아이디어를 기법으로 여러 개 만들고, 가장 좋은 하나를 골라요.')+`
+<div class="sentence"><div class="jua" style="font-size:15px">우리가 해결할 문제</div><div>${esc(S.problem||problemAuto())}</div></div>
+<div class="tip"><b>왜 기법을 쓸까?</b> 처음 떠오른 생각 하나로 바로 만들면 더 좋은 방법을 놓치기 쉬워요. 발명가들은 <b>기법</b>으로 아이디어를 많이 만든 뒤, 그중에서 가장 좋은 것을 골라요. (불편을 찾는 <b>결점 열거법</b>은 아래 도구에도 있어요.)</div>
+<label class="f">🛠️ 아이디어 도구 고르기 <small style="color:var(--sub);font-weight:400">(끌리는 기법을 골라 써 보세요. 여러 개 써도 좋아요)</small></label>
+<div class="tools" id="ideaTabs">${ideaTabsHTML()}</div>
+<div id="ideaTool">${ideaToolHTML()}</div>
+<h3 class="sec-h">🗂️ 우리 아이디어 모음 <small style="font-family:Pretendard;font-size:14px;color:var(--sub)">3개 이상 담고, 별점을 매겨 하나를 골라요 (최대 8개)</small></h3>
+<div id="ideaList">${ideaListHTML()}</div>
+${nav(true,'AI 설계하러 가기')}`}
+function ideaTabsHTML(){const I=ideaP();return IDEA_TOOLS.map(([k,e,t,d])=>`<button class="tool ${I.tool===k?'on':''}" data-ideatool="${k}"><span>${e}</span><b>${t}</b><small>${d}</small>${I.used.includes(k)?'<i>✓ 써 봤어요</i>':''}</button>`).join('')}
+function ideaToolHTML(){const I=ideaP(),v=p=>esc(ideaGet(p));
+  const add=(tool,path,label,dis)=>`<button class="btn sm pri" data-ideaadd="${tool}|${path}|${esc(label)}" ${dis?'disabled':''}>＋ 아이디어로 담기</button>`;
+  if(I.tool==='scamper')return `<div class="pane"><h3>🔄 스캠퍼 기법</h3><p class="hint">일곱 가지 질문에 답하며 아이디어를 떠올려요. 모두 쓰지 않아도 돼요. 떠오른 것만 ＋ 담아요!</p>
+    <div class="sc-grid">${SCAMPER.map(([l,t,en,q])=>`<div class="sccard"><div class="sch"><span class="scl">${l}</span><b>${t}</b><small>${en}</small></div><p class="hint">${q}</p>
+    <input type="text" data-idea="sc.${l}" value="${v('sc.'+l)}" placeholder="내 생각을 써 보세요">${add('scamper','sc.'+l,`스캠퍼 ${l}(${t})`)}</div>`).join('')}</div></div>`;
+  if(I.tool==='reverse')return `<div class="pane"><h3>🙃 역발상 기법</h3><p class="hint">"당연하다"고 생각한 것을 일부러 거꾸로 뒤집어 보면 새 아이디어가 나와요.</p>
+    <label class="f">1️⃣ 지금 이 문제를 푸는 보통 방법(당연한 생각)은?</label><input type="text" data-idea="rev.now" value="${v('rev.now')}" placeholder="예) 쓰레기를 버리는 사람이 어느 통인지 직접 찾아서 넣는다">
+    <label class="f">2️⃣ 어떻게 뒤집어 볼까요?</label><div class="chips">${REV_FLIPS.map((x,i)=>`<button data-revflip="${i}" class="${I.rev.flip===x?'on':''}">${x}</button>`).join('')}</div>
+    <label class="f">3️⃣ 뒤집어서 생각한 아이디어는?</label><input type="text" data-idea="rev.idea" value="${v('rev.idea')}" placeholder="예) 쓰레기통이 먼저 어느 통인지 알려 줘서 고민하지 않아도 된다">
+    <div style="margin-top:10px">${add('reverse','rev.idea','역발상'+(I.rev.flip?' · '+I.rev.flip:''))}</div></div>`;
+  if(I.tool==='force'){const A=I.frc.a,B=I.frc.b;return `<div class="pane"><h3>🧩 강제결합법</h3><p class="hint">관계없어 보이는 두 가지를 뽑아 억지로 합쳐 봐요. 엉뚱할수록 새로운 아이디어가 나와요!</p>
+    <div class="dice"><div class="die"><small>일상 물건</small><b>${A?esc(A):'❔'}</b></div><span class="plus">＋</span><div class="die"><small>AI 능력</small><b>${B?esc(B):'❔'}</b></div><button class="btn pri" data-forcedraw>🎲 ${A?'다시 뽑기':'뽑기'}</button></div>
+    <label class="f">이 둘을 합치면 우리 문제를 어떻게 해결할 수 있을까요?</label><input type="text" data-idea="frc.idea" value="${v('frc.idea')}" placeholder="예) 우산 + 소리 듣기 → 비 오는 소리가 들리면 현관 우산이 알려 준다">
+    <div style="margin-top:10px">${add('force','frc.idea',`강제결합법 (${A||''} + ${B||''})`,!A)}</div></div>`}
+  return `<div class="pane"><h3>🔎 결점 열거법</h3><p class="hint">지금 쓰는 비슷한 물건이나 방법의 불편한 점(결점)을 찾아 쓰고, 그것을 고치는 아이디어를 내요.</p>
+    <label class="f">1️⃣ 지금 쓰는 물건·방법은?</label><input type="text" data-idea="flaw.item" value="${v('flaw.item')}" placeholder="예) 그냥 쓰레기통">
+    <label class="f">2️⃣ 결점(불편한 점)을 찾아요</label>${[0,1,2].map(i=>`<input type="text" style="margin-bottom:6px" data-idea="flaw.f${i}" value="${v('flaw.f'+i)}" placeholder="결점 ${i+1}">`).join('')}
+    <label class="f">3️⃣ 결점을 고치는 아이디어는?</label><input type="text" data-idea="flaw.idea" value="${v('flaw.idea')}" placeholder="예) 버릴 물건을 비추면 어느 통인지 알려 주는 통">
+    <div style="margin-top:10px">${add('flaw','flaw.idea','결점 열거법'+(I.flaw.item?' · '+I.flaw.item:''))}</div></div>`}
+function ideaListHTML(){const I=ideaP();
+  if(!I.ideas.length)return '<div class="empty" style="padding:18px">아직 담은 아이디어가 없어요. 위 도구로 아이디어를 떠올려 ＋ 담아 보세요. (3개 이상 추천!)</div>';
+  const R=[['a','🤖 AI가 구별하기 쉬워요'],['b','🔧 만들 수 있어요'],['c','👍 불편을 잘 해결해요']];
+  const pk=I.ideas.find(x=>x.id===I.pick);
+  return `<div class="ideas">${I.ideas.map(x=>{x.s=x.s||{};const tot=R.reduce((a,[k])=>a+(x.s[k]||0),0),on=I.pick===x.id;
+    return `<div class="idea ${on?'pick':''}"><div class="ih2"><input type="text" data-itext="${x.id}" value="${esc(x.text)}"><button class="x" data-idel="${x.id}" title="지우기">✕</button></div><small class="isrc">${esc(x.src)}</small>
+    <div class="irates">${R.map(([k,l])=>`<span class="ir"><span>${l}</span>${[1,2,3].map(n=>`<button class="star ${(x.s[k]||0)>=n?'on':''}" data-irate="${x.id}|${k}|${n}">★</button>`).join('')}</span>`).join('')}<b class="itot">${tot}/9점</b></div>
+    <button class="btn sm ${on?'tea':''}" data-ipick="${x.id}">${on?'👑 우리 아이디어로 정했어요':'👑 이걸로 정할래요'}</button></div>`}).join('')}</div>
+  ${pk?`<label class="f">💬 왜 이 아이디어를 골랐나요?</label><textarea data-idea="reason" placeholder="예) AI가 구별하기 쉽고, 우리 반에서 바로 쓸 수 있어서요.">${esc(I.reason||'')}</textarea><div class="ideago"><button class="btn pri" data-ideago>✨ 이 아이디어로 설계하러 가기 →</button></div>`:''}`}
+function drawIdeaTop(){const a=$('#ideaTabs'),t=$('#ideaTool');if(a)a.innerHTML=ideaTabsHTML();if(t)t.innerHTML=ideaToolHTML()}
+function drawIdeaList(){const l=$('#ideaList');if(l)l.innerHTML=ideaListHTML()}
+function ideaClick(t){
+  if(t.dataset.ideatool){ideaP().tool=t.dataset.ideatool;save();drawIdeaTop();return true}
+  if(t.dataset.revflip!=null){const I=ideaP(),x=REV_FLIPS[+t.dataset.revflip];I.rev.flip=I.rev.flip===x?'':x;save();drawIdeaTop();return true}
+  if(t.hasAttribute('data-forcedraw')){const I=ideaP(),r=a=>a[Math.floor(Math.random()*a.length)];let a,b,n=0;do{a=r(FORCE_A);b=r(FORCE_B);n++}while(n<5&&a===I.frc.a&&b===I.frc.b);I.frc.a=a;I.frc.b=b;save();drawIdeaTop();logAct('🧩 강제결합법 카드를 뽑았어요','frc',20000);return true}
+  if(t.dataset.ideaadd){const [tool,path,label]=t.dataset.ideaadd.split('|'),I=ideaP(),val=String(ideaGet(path)).trim();
+    if(!val){toast('먼저 아이디어를 써 주세요!');return true}
+    if(I.ideas.length>=8){toast('아이디어는 8개까지 담을 수 있어요. 안 쓸 것은 ✕로 지워 주세요.');return true}
+    I.ideas.push({id:uid(),text:val,src:label,s:{a:0,b:0,c:0}});if(!I.used.includes(tool))I.used.push(tool);ideaSet(path,'');save();
+    logAct(`💡 아이디어를 담았어요 (${label})`);toast('💡 아이디어를 담았어요!');drawIdeaTop();drawIdeaList();return true}
+  if(t.dataset.irate){const [id,k,n]=t.dataset.irate.split('|'),x=ideaP().ideas.find(y=>y.id===id);if(x){x.s=x.s||{};x.s[k]=x.s[k]===+n?+n-1:+n;save();drawIdeaList()}return true}
+  if(t.dataset.ipick){const I=ideaP();I.pick=I.pick===t.dataset.ipick?null:t.dataset.ipick;save();drawIdeaList();return true}
+  if(t.dataset.idel){const I=ideaP();I.ideas=I.ideas.filter(x=>x.id!==t.dataset.idel);if(I.pick===t.dataset.idel)I.pick=null;save();drawIdeaList();return true}
+  if(t.hasAttribute('data-ideago')){const I=ideaP(),pk=I.ideas.find(x=>x.id===I.pick);if(!pk)return true;if(!S.oneline)S.oneline=pk.text;save();logAct(`👑 아이디어를 정했어요: ${pk.text}`);go(3);return true}
+  return false}
 
 /* 2. AI 설계 */
 function v2(){return title('발명품 설계도','AI가 어떤 감각으로 무엇을 구별하고, 구별하면 어떻게 반응할지 정해요.')+`
@@ -698,7 +815,7 @@ async function composeDrawing(layer){const c=document.createElement('canvas');c.
   if(layer){await new Promise(r=>{const im=new Image();im.onload=()=>{x.drawImage(im,0,0);r()};im.onerror=r;im.src=layer})}return c.toDataURL('image/jpeg',.85)}
 let padT;function padSave(){clearTimeout(padT);padT=setTimeout(async()=>{if(!pad.cv)return;const d=pad.x.getImageData(0,0,PW,PH).data;let any=false;for(let i=3;i<d.length;i+=16)if(d[i]){any=true;break}
   S.drawingLayer=any?pad.cv.toDataURL('image/png'):'';S.drawing=(any||(S.parts||[]).length)?await composeDrawing(S.drawingLayer):'';save()},300)}
-let recT;function recompose(){if(!S.drawing)return;clearTimeout(recT);recT=setTimeout(async()=>{if(pad.bg&&$('#padBg'))drawBg(pad.bg);S.drawing=await composeDrawing(S.drawingLayer);save();if(S.step===5)upCard()},500)}
+let recT;function recompose(){if(!S.drawing)return;clearTimeout(recT);recT=setTimeout(async()=>{if(pad.bg&&$('#padBg'))drawBg(pad.bg);S.drawing=await composeDrawing(S.drawingLayer);save();if(S.step===6)upCard()},500)}
 /* AutoDraw 등에서 가져온 그림 → 배경 지우고 설계도 색으로 */
 function hexRgb(c){const m=/^#?([0-9a-f]{6})$/i.exec(c||'');if(!m)return[255,255,255];const n=parseInt(m[1],16);return[n>>16&255,n>>8&255,n&255]}
 function buildPadImg(){const src=pad.src;if(!src)return;const s=Math.min(1,600/Math.max(src.width,src.height));const W=Math.max(1,Math.round(src.width*s)),H=Math.max(1,Math.round(src.height*s));
@@ -713,7 +830,7 @@ function buildPadImg(){const src=pad.src;if(!src)return;const s=Math.min(1,600/M
   pad.img=o;pad.imgUrl=o.toDataURL('image/png')}
 function loadPadImage(blob){const u=URL.createObjectURL(blob),im=new Image();im.onload=()=>{pad.src=im;buildPadImg();URL.revokeObjectURL(u);if(!pad.img)return;pad.tool='img';pad.adOpen=true;padRefreshTools();toast('설계도에서 붙일 자리를 끌어서 정해요 🖼️')};
   im.onerror=()=>{URL.revokeObjectURL(u);toast('그림을 열 수 없어요. PNG나 JPG 파일인지 확인해 주세요.')};im.src=u}
-document.addEventListener('paste',e=>{if(S.step!==2||!$('#padCv')||HS)return;const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(!it)return;e.preventDefault();loadPadImage(it.getAsFile())});
+document.addEventListener('paste',e=>{if(S.step!==3||!$('#padCv')||HS)return;const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(!it)return;e.preventDefault();loadPadImage(it.getAsFile())});
 function padRefreshTools(){const tools=document.querySelector('.pad-tools');if(!tools)return;const tmp=document.createElement('div');tmp.innerHTML=padHTML();tools.replaceWith(tmp.querySelector('.pad-tools'))}
 
 /* 3. AI 가르치기 */
@@ -755,7 +872,7 @@ function v4(){const s=sense();return title('발명품 작동 시험',`AI가 잘 
 <div><div class="stage" id="stage"><div class="big">🤖</div><div class="say">준비 완료!</div><div class="who">${SN().show}</div></div>
 <div class="conf" id="conf"></div>
 <div class="score"><span>AI가 맞혔나요?</span><button class="btn sm tea" data-test="ok">⭕ 맞았어요</button><button class="btn sm" data-test="ng">❌ 틀렸어요</button>
-<span class="acc" id="acc"></span></div><div id="judge"></div></div></div>
+<span class="acc" id="acc"></span></div><div id="judge"></div><div id="roundPanel">${roundsHTML()}</div></div></div>
 <div id="biasBanner">${biasBannerHTML()}</div>
 <div class="panels"><div class="panel"><h3>🧐 AI 헷갈림 노트</h3><div id="confPanel">${confusionHTML()}</div></div>
 <div class="panel"><h3>🔬 AI 실험실 미션 <small class="mcount">${missionDone()}/${MISSIONS.length} 완료</small></h3><div id="missionPanel">${missionsHTML()}</div></div></div>
@@ -764,6 +881,19 @@ function renderRun(){
   const c=$('#conf');if(c)c.innerHTML=S.classes.map((c,i)=>`<div class="r"><span>${esc(c.emoji)} ${esc(c.name)}</span><div class="b"><i id="cb_${c.id}" style="width:0;background:${colorOf(i)}"></i></div><span id="cv_${c.id}">0%</span></div>`).join('');
   updAcc();
 }
+function curTotal(){return knn?Object.values(knn.getClassExampleCount()).reduce((a,b)=>a+b,0):(S.lastTotal||0)}
+function roundsList(){const r=(S.rounds||[]).map((x,i)=>({ok:x.ok,ng:x.ng,total:x.total||0,label:`${i+1}차`,saved:true}));const t=S.test.ok+S.test.ng;
+  if(t)r.push({ok:S.test.ok,ng:S.test.ng,total:curTotal(),label:`${r.length+1}차`,saved:false});
+  return r.map(x=>({...x,tests:x.ok+x.ng,acc:Math.round(x.ok/((x.ok+x.ng)||1)*100)}))}
+function roundsText(){return roundsList().map(r=>`${r.label} ${r.acc}%`).join(' → ')}
+function roundsHTML(){const R=roundsList(),t=S.test.ok+S.test.ng,n=(S.rounds||[]).length+1;
+  let h='<div class="rounds"><h4>📈 우리 AI 개선 기록 <small>1차 시험 → 더 가르치기 → 2차 시험</small></h4>';
+  if(!R.length)h+='<p class="hint">시험하고 ⭕❌를 누르면 여기에 기록돼요. AI를 더 가르친 뒤 다시 시험하면 얼마나 좋아졌는지 볼 수 있어요.</p>';
+  else{h+=`<div class="rbars">${R.map(r=>`<div class="rb"><b>${r.acc}%</b><div class="rbar"><i class="${r.saved?'':'live'}" style="height:${Math.max(4,r.acc)}%"></i></div><span>${r.label}${r.saved?'':'<small>(진행 중)</small>'}</span><small>${r.ok}/${r.tests}번${r.total?` · 자료 ${r.total}`:''}</small></div>`).join('')}</div>`;
+    if(R.length>1){const a=R[R.length-2].acc,b=R[R.length-1].acc,d=b-a;
+      h+=`<div class="rmsg ${d>=0?'up':'down'}">${d>0?`🎉 ${a}% → ${b}% , ${d}%p 올랐어요! 무엇을 더 가르쳤더니 좋아졌나요?`:d===0?`${a}% → ${b}% , 그대로예요. 어떤 자료가 더 필요할까요?`:`${a}% → ${b}% , 내려갔어요. 헷갈림 노트에서 이유를 찾아봐요.`}</div>`}}
+  h+=`<button class="btn sm tea" data-newround ${t<3?'disabled':''}>📌 ${n}차 시험 기록 저장하고 새로 시험하기</button>${t<3?'<small class="hint"> 3번 이상 시험하면 저장할 수 있어요</small>':''}</div>`;return h}
+function refreshRounds(){const e=$('#roundPanel');if(e)e.innerHTML=roundsHTML()}
 function updAcc(){const t=S.test.ok+S.test.ng;const a=$('#acc');if(a)a.textContent=t?`정확도 ${Math.round(S.test.ok/t*100)}% (${S.test.ok}/${t})`:'시험 기록 없음'}
 /* 헷갈림 노트 */
 const clsById=id=>S.classes.find(c=>c.id===id);
@@ -786,7 +916,7 @@ function teachFix(t){if(!lastFixFeat||!knn)return;logAct(`헷갈린 장면을 ${
   const j=$('#judge');if(j)j.innerHTML='<div class="judge ok">🎓 가르쳤어요! 다시 시험해 보세요.</div>';mainRunner.reset()}
 function logTest(t,p,c,thumb){S.testLog=S.testLog||[];S.testLog.push({t,p});if(S.testLog.length>300)S.testLog.shift();
   if(t===p)S.test.ok++;else{S.test.ng++;if(thumb){S.mistakes=S.mistakes||[];S.mistakes.unshift({t,p,c,thumb});S.mistakes=S.mistakes.slice(0,12)}}
-  save();updAcc();const cp=$('#confPanel');if(cp)cp.innerHTML=confusionHTML()}
+  save();updAcc();refreshRounds();const cp=$('#confPanel');if(cp)cp.innerHTML=confusionHTML()}
 function topConfusion(){const m={};(S.testLog||[]).forEach(r=>{if(r.t!==r.p){const k=r.t+'>'+r.p;m[k]=(m[k]||0)+1}});const top=Object.entries(m).sort((a,b)=>b[1]-a[1])[0];
   if(!top)return '';const [t,p]=top[0].split('>');const tc=clsById(t);if(!tc)return '';
   return p==='_unsure'?`${tc.emoji} ${tc.name}${josaEul(tc.name)} 보고 "모르겠어요"라고 ${top[1]}번 했어요`:`${tc.emoji} ${tc.name}${josaEul(tc.name)} ${clsLabel(p)}(으)로 ${top[1]}번 헷갈렸어요`}
@@ -836,7 +966,7 @@ function v5(){return title('발명 카드 완성','발명품을 돌아보고 카
 <div class="grid2" style="grid-template-columns:90px 1fr"><div><label class="f">대표 그림</label><input type="text" class="emo" style="text-align:center;font-size:24px" maxlength="4" data-k="emoji" value="${esc(S.emoji)}"></div>
 <div><label class="f">발명품 이름</label><input type="text" data-k="name" value="${esc(S.name)}"></div></div>
 ${aiImgHTML()}
-<label class="f">👍 AI가 잘 알아챈 때는?</label><textarea data-r="good" placeholder="예) 캔을 가까이 비췄을 때는 거의 다 맞혔어요.">${esc(S.reflect.good)}</textarea>
+<label class="f">👍 AI가 잘 알아챈 때는?</label><textarea data-r="good" placeholder="${sense()==='sound'?'예) 박수 소리는 거의 다 맞혔어요.':sense()==='pose'?'예) 두 손을 들었을 때는 거의 다 맞혔어요.':'예) 캔을 가까이 비췄을 때는 거의 다 맞혔어요.'}">${esc(S.reflect.good)}</textarea>
 ${topConfusion()||missionsSummary()?`<div class="hintbox">${topConfusion()?`🧐 <b>헷갈림 노트</b>: ${topConfusion()}<br>`:''}${missionsSummary()?`🔬 <b>실험실 미션</b>: ${esc(missionsSummary())}`:''}</div>`:''}
 <label class="f">⚠️ AI가 틀린다면 어떤 일이 생길까? 어떻게 대비할까?</label><textarea data-r="wrong" placeholder="예) 페트병을 캔 통에 넣게 돼요. 통 위에 그림 표시도 같이 붙여요.">${esc(S.reflect.wrong)}</textarea>
 <label class="f">🚀 더 좋게 만들려면?</label><textarea data-r="better" placeholder="예) 찌그러진 캔 사진도 더 가르치고 싶어요.">${esc(S.reflect.better)}</textarea>
@@ -883,11 +1013,11 @@ async function listenMyCard(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||myCa
     if(prev&&prev!==S.cardStatus){toast(S.cardStatus==='approved'?'🎉 발명 카드가 승인되어 갤러리에 올라갔어요!':S.cardStatus==='rejected'?'↩️ 선생님이 카드를 다시 고쳐 보자고 했어요':'')}
     save();const p=$('#pubStat');if(p)p.innerHTML=pubStatHTML()})}catch(e){}}
 async function listenAiImg(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||aiRef)return;try{await fbInit();aiRef=cRef(S.classCode,'aiimg/'+S.teamId);
-  aiRef.on('value',s=>{const v=s.val();if(v&&v!==S.aiImage){S.aiImage=v;aiP().req='done';save();toast('🎨 선생님이 AI 그림을 보내 주셨어요!');if(S.step===5)reAI()}})}catch(e){}}
+  aiRef.on('value',s=>{const v=s.val();if(v&&v!==S.aiImage){S.aiImage=v;aiP().req='done';save();toast('🎨 선생님이 AI 그림을 보내 주셨어요!');if(S.step===6)reAI()}})}catch(e){}}
 
 function cardData(){
   return{id:S.cardId||null,team:S.team,members:S.members,name:S.name,emoji:S.emoji,oneline:S.oneline,
-    problem:S.problem||problemAuto(),reflect:{...S.reflect},drawing:S.drawing||'',aiImage:S.aiImage||'',sense:sense(),confuse:topConfusion(),missions:missionsSummary(),
+    problem:S.problem||problemAuto(),reflect:{...S.reflect},drawing:S.drawing||'',aiImage:S.aiImage||'',sense:sense(),confuse:topConfusion(),missions:missionsSummary(),idea:ideaSummary(),roundsTxt:roundsText(),
     acc:(S.test.ok+S.test.ng)?Math.round(S.test.ok/(S.test.ok+S.test.ng)*100):null,
     tests:S.test.ok+S.test.ng,
     total:knn?Object.values(knn.getClassExampleCount()).reduce((a,b)=>a+b,0):(S.lastTotal||0),
@@ -902,8 +1032,9 @@ function cardHTML(d,withLikes){
    :d.drawing?`<div class="idraw"><img src="${d.drawing}" alt="발명품 디자인"></div>`:''}
   <div class="ib">${d.oneline?`<div class="sec"><b>한 줄 소개</b>${esc(d.oneline)}</div>`:''}
   <div class="sec"><b>해결하려는 문제</b>${esc(d.problem)}</div>
+  ${d.idea&&d.idea.pick?`<div class="sec"><b>아이디어는 이렇게 나왔어요</b>💡 ${esc(d.idea.pick)}<br><small style="color:var(--sub)">${(d.idea.tools||[]).length?esc(d.idea.tools.join(' · '))+' 기법으로 ':''}아이디어 ${d.idea.n||0}개 중에서 골랐어요.${d.idea.reason?' 이유: '+esc(d.idea.reason):''}</small></div>`:''}
   <div class="sec"><b>AI 작동 규칙</b><div class="rules">${(d.classes||[]).map((c,i)=>`<div class="rule" style="border-color:${colorOf(i)};background:${colorOf(i)}14">${c.thumb?`<img src="${c.thumb}" alt="">`:`<span class="em">${esc(c.emoji)}</span>`}<div class="if">[<strong>${esc(c.name)}</strong>]${josaEul(c.name)} ${SN(d.sense).verb} → ${c.msg?esc(c.msg):'조용히 기다려요'}</div></div>`).join('')}</div></div>
-  <div class="sec meta"><span>${SN(d.sense).e} ${SN(d.sense).t}</span>${d.total?`<span>📚 학습 ${SN(d.sense).noun} ${d.total}${SN(d.sense).unit}</span>`:''}${d.acc!=null?`<span>🎯 시험 정확도 ${d.acc}% (${d.tests}번)</span>`:''}${d.tries&&((d.tries.ok||0)+(d.tries.ng||0))?`<span>👫 친구 체험 정확도 ${Math.round((d.tries.ok||0)/((d.tries.ok||0)+(d.tries.ng||0))*100)}% (${(d.tries.ok||0)+(d.tries.ng||0)}번)</span>`:''}</div>
+  <div class="sec meta"><span>${SN(d.sense).e} ${SN(d.sense).t}</span>${d.total?`<span>📚 학습 ${SN(d.sense).noun} ${d.total}${SN(d.sense).unit}</span>`:''}${d.acc!=null?`<span>🎯 시험 정확도 ${d.acc}% (${d.tests}번)</span>`:''}${d.roundsTxt&&d.roundsTxt.includes('→')?`<span>📈 개선 ${esc(d.roundsTxt)}</span>`:''}${d.tries&&((d.tries.ok||0)+(d.tries.ng||0))?`<span>👫 친구 체험 정확도 ${Math.round((d.tries.ok||0)/((d.tries.ok||0)+(d.tries.ng||0))*100)}% (${(d.tries.ok||0)+(d.tries.ng||0)}번)</span>`:''}</div>
   ${d.confuse?`<div class="sec"><b>가장 헷갈린 것</b>${esc(d.confuse)}</div>`:''}${d.missions?`<div class="sec"><b>AI 실험실에서 알게 된 것</b>${esc(d.missions)}</div>`:''}
   ${r.good?`<div class="sec"><b>잘 알아챈 때</b>${esc(r.good)}</div>`:''}
   ${r.wrong?`<div class="sec"><b>AI가 틀린다면</b>${esc(r.wrong)}</div>`:''}
@@ -915,7 +1046,7 @@ function cardHTML(d,withLikes){
 /* 6. 갤러리 */
 function v6(){const joined=FIREBASE_CONFIG&&S.classCode;return title('발명 갤러리',joined?`<b>${esc(S.className)}</b> 친구들의 발명품을 둘러보고 칭찬 스티커를 붙여 주세요.`:'친구들의 발명품을 둘러보고 칭찬 스티커를 붙여 주세요.')+`
 <div class="gal" id="gal"></div>
-<div class="nav"><button class="btn ghost" data-go="5">← 발명 카드</button>${joined?'':'<button class="btn ghost" data-clrgal>갤러리 비우기</button>'}</div>`}
+<div class="nav"><button class="btn ghost" data-go="6">← 발명 카드</button>${joined?'':'<button class="btn ghost" data-clrgal>갤러리 비우기</button>'}</div>`}
 let galCache=[],galOpen=true;
 function localGal(){try{return JSON.parse(localStorage.getItem(GKEY))||[]}catch(e){return[]}}
 function setLocalGal(a){try{localStorage.setItem(GKEY,JSON.stringify(a))}catch(e){toast('저장 공간이 부족해요. 갤러리를 조금 비워 주세요.')}}
@@ -926,7 +1057,7 @@ function drawGal(){const g=$('#gal');if(!g)return;
   if(!galOpen){g.innerHTML='<div class="empty">🔒 선생님이 갤러리를 열면 친구들의 발명품을 볼 수 있어요.<br>내 카드는 잘 올라갔어요!</div>';return}
   const joined=FIREBASE_CONFIG&&S.classCode;
   const arr=[...galCache].filter(d=>!joined||d.status==='approved'||d.id===S.teamId).sort((a,b)=>(b.id===S.teamId)-(a.id===S.teamId)||b.ts-a.ts);
-  g.innerHTML=arr.length?arr.map(d=>joined&&d.id===S.teamId&&d.status!=='approved'?`<div class="mine">${d.status==='rejected'?'<span class="badge no">↩️ 다시 고쳐 보기</span>':'<span class="badge wait">⏳ 선생님 확인 중 · 나만 보여요</span>'}${cardHTML(d,false)}</div>`:cardHTML(d,true)).join(''):'<div class="empty">아직 올라온 발명품이 없어요.<br>6단계에서 "갤러리에 올리기"를 눌러 보세요!</div>';}
+  g.innerHTML=arr.length?arr.map(d=>joined&&d.id===S.teamId&&d.status!=='approved'?`<div class="mine">${d.status==='rejected'?'<span class="badge no">↩️ 다시 고쳐 보기</span>':'<span class="badge wait">⏳ 선생님 확인 중 · 나만 보여요</span>'}${cardHTML(d,false)}</div>`:cardHTML(d,true)).join(''):'<div class="empty">아직 올라온 발명품이 없어요.<br>7단계에서 "갤러리에 올리기"를 눌러 보세요!</div>';}
 
 /* ---------- Firebase (학급) ---------- */
 const ROOT='aiInventLab/classes';
@@ -947,7 +1078,7 @@ async function listenClassGallery(){try{await fbInit();offAll(stuRefs);
 function progressData(){const counts=knn?knn.getClassExampleCount():{};const t=S.test.ok+S.test.ng;
   return{group:S.group||null,nick:S.nick||'',team:S.team||'(이름 없음)',members:S.members||'',step:S.step,name:S.name||'',emoji:S.emoji||'💡',problem:S.problem||problemAuto(),
     classes:S.classes.map(c=>({id:c.id,emoji:c.emoji,name:c.name,count:counts[c.id]||0})),
-    total:Object.values(counts).reduce((a,b)=>a+b,0)||S.lastTotal||0,acc:t?Math.round(S.test.ok/t*100):null,tests:t,published:!!S.cardId,device:DEVICE_ID,sense:sense(),confuse:topConfusion(),missions:missionsSummary(),missionDone:missionDone(),updatedAt:TS()}}
+    total:Object.values(counts).reduce((a,b)=>a+b,0)||S.lastTotal||0,acc:t?Math.round(S.test.ok/t*100):null,tests:t,published:!!S.cardId,device:DEVICE_ID,sense:sense(),confuse:topConfusion(),missions:missionsSummary(),missionDone:missionDone(),ideaN:ideaSummary().n,ideaTools:ideaSummary().tools,ideaPick:ideaSummary().pick,roundsTxt:roundsText(),updatedAt:TS()}}
 let syncT,bkT;function syncProgress(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked)return;clearTimeout(syncT);syncT=setTimeout(syncNow,1500);clearTimeout(bkT);bkT=setTimeout(backupState,6000)}
 /* 기기를 바꿔도 이어 할 수 있게 모둠 기록을 학급 서버에 백업 */
 function backupStateObj(){const o=JSON.parse(JSON.stringify(S));['kicked','gotoSeen','solo','classCode','className','kind','teamId','group','dataSaved'].forEach(k=>delete o[k]);return o}
@@ -972,14 +1103,14 @@ async function joinClass(){
     if(bk&&bk.state&&!confirm(`${g}모둠이 하던 기록이 학급 서버에 있어요.\n이 기기로 불러와서 이어서 할까요?\n(이 기기에 있던 다른 발명 기록은 바뀌어요)`))return}
   if(S.teamId&&S.teamId!==id){S.cardId=null;S.cardStatus='';if(myCardRef){myCardRef.off();myCardRef=null}if(aiRef){aiRef.off();aiRef=null}}
   const nick=($('#eNick')?.value||'').trim(),members=($('#eMembers')?.value||'').trim();
-  if(bk&&bk.state){resetKnn();endBias();S=Object.assign(fresh(),bk.state);clearDataset();
+  if(bk&&bk.state){resetKnn();endBias();S=migrateSteps(Object.assign(fresh(),{ver:1},bk.state));clearDataset();
     if(bk.data&&bk.data.enc){const raw=decodeRawEnc(bk.data.enc);try{await idbSet('dataset',{sense:bk.data.sense,model:bk.data.model||'',data:raw});
       const th={};for(const k in raw)if((S.savedThumbs||{})[k])th[k]=[S.savedThumbs[k]];await idbSet('thumbs',th);S.dataSaved=true}catch(e){}}}
   else{S.step=0;if(!S.visited.includes(0))S.visited.push(0)}
   if(nick)S.nick=nick;if(members)S.members=members;
   S.classCode=E.code;S.className=E.meta.name;S.kind=E.meta.kind||'class';S.group=g;S.teamId=id;S.team=teamLabel();S.solo=false;S.kicked=false;
   save();await syncNow();logAct(bk&&bk.state?'💻 다른 기기에서 기록을 불러와 본부로 이어서 시작했어요':'💻 본부로 입장했어요');toast(bk&&bk.state?`${g}모둠 기록을 불러왔어요! ${S.step+1}단계부터 이어서 해요.`:`${E.meta.name} ${g}모둠으로 들어왔어요! 🎉`);history.replaceState(null,'',location.pathname);render();
-  if(S.dataSaved&&S.step<3)loadModel();
+  if(S.dataSaved&&S.step<4)loadModel();
 }
 
 /* ---------- 친구 발명품 체험 : AI 공유 ---------- */
@@ -1012,8 +1143,8 @@ async function openTry(id){const code=mode==='teacher'?T.code:mode==='view'?V.co
     const st=$('#tryStatus');if(st)st.textContent=`🧠 준비 완료! ${SN(s).show}`;
     tryRunner=makeRunner({knn:()=>tryKnn,sense:()=>s,trained:()=>true,classes:()=>tryModel.classes,p:'t',stage:'#tryStage',thr:()=>65,tts:()=>true});tryRunner.start();
   }catch(e){toast('체험을 시작하지 못했어요. 인터넷을 확인해 주세요.');closeTry()}}
-function closeTry(){if(tryRunner)tryRunner.stop();tryRunner=null;if(tryKnn){try{tryKnn.dispose()}catch(e){}tryKnn=null}if(mode!=='student'||!(S.step===3||S.step===4))stopMedia();
-  document.querySelectorAll('.overlay.try').forEach(o=>o.remove());video.style.display='none';document.body.appendChild(video);if(mode==='student'&&(S.step===3||S.step===4))render()}
+function closeTry(){if(tryRunner)tryRunner.stop();tryRunner=null;if(tryKnn){try{tryKnn.dispose()}catch(e){}tryKnn=null}if(mode!=='student'||!(S.step===4||S.step===5))stopMedia();
+  document.querySelectorAll('.overlay.try').forEach(o=>o.remove());video.style.display='none';document.body.appendChild(video);if(mode==='student'&&(S.step===4||S.step===5))render()}
 function tryVote(v){if(!tryRunner||!tryRunner.last){toast('먼저 AI에게 보여 주세요!');return}tryVotes[v]++;
   if(mode!=='view')cRef(tryCode,'cards/'+tryId+'/tries/'+v).transaction(x=>(x||0)+1);const n=tryVotes.ok+tryVotes.ng;const a=$('#tryAcc');if(a)a.textContent=`내 체험 ${Math.round(tryVotes.ok/n*100)}% (${tryVotes.ok}/${n})`}
 
@@ -1057,14 +1188,14 @@ function liveFrame(){try{const c=document.createElement('canvas');c.width=176;c.
   if(!camOn||video.readyState<2)return null;x.save();if(camFacing()==='user'){x.translate(176,0);x.scale(-1,1)}x.drawImage(video,0,0,176,132);const pc=$('#poseCv');if(pc)x.drawImage(pc,0,0,176,132);x.restore();
   return c.toDataURL('image/jpeg',.55)}catch(e){return null}}
 function hqActivity(){if(document.body.classList.contains('present'))return '🎤 발표 중';if(holdT)return `📸 ${(clsById(holdId)||{}).name||''} 자료 모으는 중`;if(biasStash)return '🔬 불공평한 데이터 실험 중';
-  return ['🚀 시작 화면','🔍 문제 찾는 중','📐 설계하는 중','📸 AI 가르치는 중','⚙️ 작동 시험 중','🪪 발명 카드 쓰는 중','🖼️ 갤러리 보는 중'][S.step]||''}
+  return ['🚀 시작 화면','🔍 문제 찾는 중','💡 아이디어 내는 중','📐 설계하는 중','📸 AI 가르치는 중','⚙️ 작동 시험 중','🪪 발명 카드 쓰는 중','🖼️ 갤러리 보는 중'][S.step]||''}
 let liveT=null,lastLive='';
 function liveTick(){if(mode==='view')return;const camOK=CTRL.liveCam!==false;
   if(HS){if(!fb)return;const act=HS.tab==='write'?'✏️ 함께 쓰는 중':hHoldT?'📤 자료 보내는 중':'📸 자료 보내기 화면';
     cRef(HS.code,'helpers/'+HS.teamId+'/'+DEVICE_ID).set({name:HS.name,ts:TS(),act,frame:camOK&&HS.tab!=='write'?liveFrame():null});return}
   if(mode!=='student'||!S.classCode||!S.teamId||S.kicked||!fb)return;
-  const L=mainRunner.last,pred=S.step===4&&L?{label:clsLabel(L.id),conf:L.conf}:null;
-  const o={step:S.step,act:hqActivity(),pred,frame:camOK&&(S.step===3||S.step===4)?liveFrame():null};const sig=JSON.stringify([o.step,o.act,o.pred,!!o.frame]);
+  const L=mainRunner.last,pred=S.step===5&&L?{label:clsLabel(L.id),conf:L.conf}:null;
+  const o={step:S.step,act:hqActivity(),pred,frame:camOK&&(S.step===4||S.step===5)?liveFrame():null};const sig=JSON.stringify([o.step,o.act,o.pred,!!o.frame]);
   if(!o.frame&&sig===lastLive)return;lastLive=sig;cRef(S.classCode,'live/'+S.teamId).set({...o,ts:TS()})}
 function startLive(){if(liveT)return;liveT=setInterval(()=>{if(document.hidden)return;try{liveTick()}catch(e){}},3000)}
 startLive();
@@ -1097,7 +1228,7 @@ let shApplied={};
 function applyShared(key,v,ts){if(shApplied[key]&&shApplied[key]>=ts)return;shApplied[key]=ts;const f=key.slice(2);
   if(key.startsWith('k_')){if(S[f]===v)return;S[f]=v;if(['place','who','when','what'].includes(f)){S.problem='';const p=$('#probAuto');if(p)p.textContent=problemAuto()}if(f==='name'){recompose();upRules()}}
   else{S.reflect=S.reflect||{};if(S.reflect[f]===v)return;S.reflect[f]=v}
-  const el=inputFor(key);if(el&&document.activeElement!==el)el.value=v;if(S.step===5)upCard();save()}
+  const el=inputFor(key);if(el&&document.activeElement!==el)el.value=v;if(S.step===6)upCard();save()}
 function decorateShared(){SHARED.forEach(([key])=>{const el=inputFor(key);if(!el)return;let tag=el.parentElement.querySelector(`.typing[data-tk="${key}"]`);
   if(!tag){tag=document.createElement('span');tag.className='typing';tag.dataset.tk=key;el.insertAdjacentElement('afterend',tag)}
   const who=Object.entries((SH.t||{})[key]||{}).filter(([d,o])=>d!==DEVICE_ID&&o&&Date.now()-(o.ts||0)<9000).map(([d,o])=>o.name);
@@ -1147,10 +1278,10 @@ function drawHelperBody(full){const b=$('#hBody');if(!b||!HS)return;const tab=HS
     b.innerHTML=`<p class="hint">여기 쓴 내용은 본부 화면과 실시간으로 함께 바뀌어요. 다른 친구가 쓰는 중이면 ✍️ 표시가 떠요.</p>`+Object.entries(grp).map(([g,t])=>`<div class="hgroup"><h3>${t}</h3>${SHARED.filter(x=>x[2]===g).map(([key,label])=>`<label class="f" for="hs_${key}">${label}</label>${g==='reflect'?`<textarea id="hs_${key}" data-hs="${key}">${esc((SH.f[key]||{}).v||'')}</textarea>`:`<input type="text" id="hs_${key}" data-hs="${key}" value="${esc((SH.f[key]||{}).v||'')}">`}`).join('')}</div>`).join('');
     decorateShared();return}
   b.dataset.tab='cap';const s=HT&&HT.sense;
-  if(!HT||!(HT.classes||[]).length){b.innerHTML='<div class="empty">본부에서 3단계 AI 설계를 마치면 자료를 보낼 수 있어요.</div>';return}
+  if(!HT||!(HT.classes||[]).length){b.innerHTML='<div class="empty">본부에서 4단계 AI 설계를 마치면 자료를 보낼 수 있어요.</div>';return}
   if(!full&&hMediaS===s)return;hMediaS=s;
   b.innerHTML=`<div class="lab"><div><div class="cam" id="camBox"><div class="msg" id="camMsg">${SN(s).media==='mic'?'마이크':'카메라'}를 켜는 중…</div><span class="badge">🤝 도우미 ${SN(s).media==='mic'?'마이크':'카메라'}</span></div><div class="status" id="hStatus"></div>
-    <div class="tip"><b>도우미 팁</b> 본부와 <b>다른 방향·거리·사람</b>으로 모으면 AI가 더 똑똑해져요. 기기마다 카메라가 달라서 자료가 저절로 다양해져요!</div></div>
+    <div class="tip"><b>도우미 팁</b> 본부와 <b>${SN(s).media==='mic'?'다른 소리·거리·사람':'다른 방향·거리·사람'}</b>으로 모으면 AI가 더 똑똑해져요. 기기마다 ${SN(s).media==='mic'?'마이크':'카메라'}가 달라서 자료가 저절로 다양해져요!</div></div>
     <div class="collect" id="hCollect"></div></div>`;
   drawHelperCounts();
   mountMedia(s).then(async()=>{const st=$('#hStatus');if(st)st.textContent=`🧠 ${SN(s).t} 준비 중…`;try{await ensureExtractor(s);if($('#hStatus'))$('#hStatus').textContent='🧠 준비 완료! 버튼을 꾹 누르면 본부로 자료가 날아가요.';drawHelperCounts();startPreview(s)}catch(e){if($('#hStatus'))$('#hStatus').textContent='⚠️ AI를 불러오지 못했어요. 인터넷을 확인해 주세요.'}})}
@@ -1179,7 +1310,7 @@ function vCardHTML(d,i){const wait=d.status!=='approved';
 function renderView(){
   $('#stepper').innerHTML='';$('#teamTag').textContent='👀 작품 보기';
   const m=$('#main');
-  const top=`<div class="vmode"><span class="vm on">👀 보기 모드</span><button class="vm" data-vedit>✏️ 편집 모드 (학생 화면)</button></div>`;
+  const top=`<div class="vmode"><span class="vm on">👀 보기 모드</span></div>`;
   if(!FIREBASE_CONFIG){const arr=localGal();V.cards=Object.fromEntries(arr.map((d,i)=>[d.id||('l'+i),{...d,status:'approved'}]));
     m.innerHTML=top+`<div class="step-title"><h2>👀 완성 작품 보기</h2><span class="chip">이 기기 갤러리</span></div><div class="gal" id="vGal"></div>`;drawView();return}
   if(!V.code){const pre=(new URLSearchParams(location.search).get('c')||'').toUpperCase();const saved=tSaved();
@@ -1191,7 +1322,7 @@ function renderView(){
   <div class="vbar"><span class="seg"><button data-vall="0" class="${V.all?'':'on'}">승인된 작품</button><button data-vall="1" class="${V.all?'on':''}">제출된 작품 모두</button></span>
   <span id="vCount" class="sub"></span><span style="flex:1"></span><button class="btn sm" data-vshow="0">🖥️ 한 장씩 크게 보기</button></div>
   <div class="gal" id="vGal"></div>
-  <div class="nav"><button class="btn ghost" data-vclose>← 다른 학급</button></div>`;drawView()}
+  ${V.viaClass?'':'<div class="nav"><button class="btn ghost" data-vclose>← 다른 학급</button></div>'}`;drawView()}
 function drawView(){const g=$('#vGal');if(!g)return;const arr=vList();
   document.querySelectorAll('[data-vall]').forEach(b=>b.classList.toggle('on',(b.dataset.vall==='1')===V.all));
   const c=$('#vCount');if(c)c.textContent=`${arr.length}개`;
@@ -1199,7 +1330,7 @@ function drawView(){const g=$('#vGal');if(!g)return;const arr=vList();
   if(document.querySelector('.overlay.vshow'))vShow(V.idx,true)}
 async function vOpen(){const i=$('#vCode');const code=(i?i.value:'').trim().toUpperCase();if(code.length!==6){toast('학급 코드 6자리를 확인해 주세요.');return}
   V.loading=true;try{await fbInit();const mm=await cRef(code,'meta').get();V.loading=false;if(!mm.exists()){toast('그런 학급 코드가 없어요. 다시 확인해 주세요.');return}
-    offAll(vRefs);V.code=code;V.meta=mm.val();V.cards={};try{history.replaceState(null,'',location.pathname+'?c='+code+'#view')}catch(e){}
+    offAll(vRefs);V.viaClass=false;V.code=code;V.meta=mm.val();V.cards={};try{history.replaceState(null,'',location.pathname+'?c='+code+'#view')}catch(e){}
     const c=cRef(code,'cards');vRefs.push(c);c.on('value',s=>{V.cards=s.val()||{};drawView()});renderView()}
   catch(e){V.loading=false;toast('연결하지 못했어요. 인터넷을 확인해 주세요.')}}
 function vShow(i,keep){const arr=vList();if(!arr.length){toast('보여 줄 작품이 없어요.');return}V.idx=Math.max(0,Math.min(arr.length-1,i));const d=arr[V.idx];
@@ -1207,6 +1338,16 @@ function vShow(i,keep){const arr=vList();if(!arr.length){toast('보여 줄 작�
   o.innerHTML=`<div class="ov-head"><h2>🖼️ ${esc(V.meta?.name||'발명 작품')} <small>${V.idx+1} / ${arr.length}</small></h2><span style="display:flex;gap:8px">${d.hasModel?`<button class="btn tea" data-try="${d.id}">🧪 체험해 보기</button>`:''}<button class="btn" data-vshowclose>닫기 ✕</button></span></div>
   <div class="vstage"><button class="vnav" data-vstep="-1" ${V.idx?'':'disabled'}>◀</button><div class="vone">${cardHTML(d,false)}</div><button class="vnav" data-vstep="1" ${V.idx<arr.length-1?'':'disabled'}>▶</button></div>`}
 function vStep(n){vShow(V.idx+n)}
+/* 선생님이 '보기 모드'로 바꾼 학급 : 코드를 넣으면 바로 보기 전용 화면으로 */
+function enterViewByCode(code,meta){offAll(vRefs);V={code,meta,cards:{},all:false,idx:0,loading:false,viaClass:true};mode='view';
+  try{history.replaceState(null,'',location.pathname+'?c='+code+'#view')}catch(e){}
+  fbInit().then(()=>{const c=cRef(code,'cards'),vm=cRef(code,'ctrl/viewMode');vRefs.push(c,vm);
+    c.on('value',s=>{V.cards=s.val()||{};drawView()});
+    vm.on('value',s=>{if(V.viaClass&&s.val()!==true)leaveViewByClass()})});
+  render()}
+function leaveViewByClass(){offAll(vRefs);document.querySelectorAll('.overlay.vshow,.overlay.try').forEach(o=>o.remove());
+  V={code:'',meta:null,cards:{},all:false,idx:0,loading:false,viaClass:false};E={code:'',meta:null,groups:0,teams:{},sel:null,loading:false};
+  setMode('student');toast('✏️ 선생님이 편집 모드로 바꿨어요. 모둠을 골라 들어가요!')}
 document.addEventListener('keydown',e=>{if(!document.querySelector('.overlay.vshow')||document.querySelector('.overlay.try'))return;if(e.key==='ArrowRight')vStep(1);else if(e.key==='ArrowLeft')vStep(-1);else if(e.key==='Escape')document.querySelectorAll('.overlay.vshow').forEach(o=>o.remove())});
 function tSaved(){try{return JSON.parse(localStorage.getItem(TCKEY))||[]}catch(e){return[]}}
 function tRemember(code,name){const a=tSaved().filter(x=>x.code!==code);a.unshift({code,name});try{localStorage.setItem(TCKEY,JSON.stringify(a.slice(0,10)))}catch(e){}}
@@ -1235,8 +1376,9 @@ function renderTeacher(){
     <button class="btn sm" data-copylink>🔗 참여 링크 복사</button></div>
     <div class="dash-side"><div class="stats" id="tStats"></div>
     <div class="ctrl"><span class="grpctl">모둠 수 <button class="btn sm ghost" data-tgrp="-1">−</button><b id="tG">${T.groups||6}</b><button class="btn sm ghost" data-tgrp="1">＋</button></span><label class="switch"><input type="checkbox" id="tOpen" ${T.open?'checked':''}> 학생 갤러리 열기</label>
+    <label class="switch" title="켜면 QR·학급 코드로 들어온 학생이 모둠 선택 없이 바로 보기 전용 화면으로 들어가요"><input type="checkbox" id="tViewMode" ${T.ctrl?.viewMode?'checked':''}> 👀 보기 모드</label>
     <button class="btn sm" data-tbig>🖥️ 갤러리 크게 보기</button><button class="btn sm ghost" data-tview>👀 보기 전용 화면</button></div>
-    <div class="tip" style="margin-top:12px"><b>학생 참여 방법</b> QR을 찍거나 접속해서 학급 코드 <b>${T.code}</b>를 넣고, 자기 모둠 번호를 눌러 입장해요.</div></div></div>
+    <div class="tip" style="margin-top:12px"><b>학생 참여 방법</b> QR을 찍거나 접속해서 학급 코드 <b>${T.code}</b>를 넣고, 자기 모둠 번호를 눌러 입장해요.<br><b>👀 보기 모드</b>를 켜면 같은 방법으로 들어온 학생이 모둠 선택 없이 바로 <b>보기 전용 화면</b>으로 들어가요. (끄면 다시 편집 모드)</div></div></div>
   <h3 class="sec-h">🚦 수업 진행 제어</h3><div class="ctrlpanel" id="ctrlPanel"></div>
   <h3 class="sec-h">📡 실시간 모둠 화면 <small class="hint" style="font-family:Pretendard">카드를 누르면 그 모둠의 함께 쓰기 내용과 전체 기록이 열려요</small></h3><div class="livegrid" id="liveGrid"></div>
   <h3 class="sec-h">📜 활동 기록</h3><div class="feed" id="feed"></div>
@@ -1264,10 +1406,10 @@ function drawDash(){
   const st=$('#tStats');if(st){const accs=teams.filter(t=>t.acc!=null).map(t=>t.acc);
     st.innerHTML=`<div><b>${teams.length}<span style="font-size:16px;color:var(--sub)">/${G}</span></b><small>입장한 모둠</small></div><div><b>${approved.length}<span style="font-size:16px;color:var(--sub)">/${cards.length}</span></b><small>승인/제출 카드</small></div><div><b>${teams.reduce((a,t)=>a+(t.total||0),0)}</b><small>학습 자료</small></div><div><b>${accs.length?Math.round(accs.reduce((a,b)=>a+b,0)/accs.length)+'%':'-'}</b><small>평균 정확도</small></div>`}
   const r=$('#tRows');if(r)r.innerHTML=rowsList.map(t=>t.empty?`<tr class="empty-row"><td><b>${t.group}모둠</b></td><td colspan="7">아직 입장 전이에요</td></tr>`:`<tr><td><b>${t.group?t.group+'모둠':esc(t.team)}</b><small>${esc(t.nick||'')}${t.nick&&t.members?' · ':''}${esc(t.members)}</small></td>
-    <td>${esc(t.emoji)} ${esc(t.name||'-')}<small>${SN(t.sense).e} ${SN(t.sense).t}${t.missionDone?` · 🔬 미션 ${t.missionDone}개`:''}${(n=>n?` · 🤝 도우미 ${n}`:'')(activeHelpers((T.helpers||{})[t.id]).length)}</small></td>
+    <td>${esc(t.emoji)} ${esc(t.name||'-')}<small>${SN(t.sense).e} ${SN(t.sense).t}${t.ideaN?` · 💡 ${esc((t.ideaTools||[]).join('·'))} 아이디어 ${t.ideaN}개`:''}${t.missionDone?` · 🔬 미션 ${t.missionDone}개`:''}${(n=>n?` · 🤝 도우미 ${n}`:'')(activeHelpers((T.helpers||{})[t.id]).length)}</small></td>
     <td><div class="dots">${STEPS.map((s,i)=>`<i class="${i<=t.step?'on':''}" title="${s.t}"></i>`).join('')}</div><small>${STEPS[t.step]?.e||''} ${STEPS[t.step]?.t||''}</small></td>
     <td>${t.total||0}${SN(t.sense).unit}<small>${(t.classes||[]).map(c=>`${esc(c.emoji)}${c.count}`).join(' ')}</small></td>
-    <td>${t.acc!=null?t.acc+'%<small>'+t.tests+'번 시험</small>':'-'}</td>
+    <td>${t.acc!=null?t.acc+'%<small>'+t.tests+'번 시험'+(t.roundsTxt&&t.roundsTxt.includes('→')?'<br>📈 '+esc(t.roundsTxt):'')+'</small>':(t.roundsTxt?'<small>📈 '+esc(t.roundsTxt)+'</small>':'-')}</td>
     <td>${{approved:'✅ 승인',pending:'⏳ 대기',rejected:'↩️ 반려'}[(T.cards[t.id]||{}).status||(T.cards[t.id]?'pending':'')]||'—'}</td><td>${ago(t.updatedAt)}<small>${t.device?(Date.now()-(t.updatedAt||0)<ACTIVE_MS?'💻 기기 사용 중':'💤 기기 연결됨'):'⚪ 연결된 기기 없음'}</small>${t.device?`<button class="btn sm ghost rel" data-trelease="${esc(t.id)}">🔓 기기 풀기</button>`:''}</td>
     <td><button class="x" title="모둠 기록 지우기" data-tdelteam="${esc(t.id)}">🗑️</button></td></tr>`).join('');
   const g=$('#tGal');if(g)g.innerHTML=cards.length?cards.map(d=>`<div class="tcard ${d.status}"><span class="badge ${d.status==='approved'?'ok':d.status==='rejected'?'no':'wait'}">${{approved:'✅ 승인됨 · 갤러리 공개',pending:'⏳ 승인 대기',rejected:'↩️ 다시 고치기 요청함'}[d.status]}</span>${cardHTML(d,d.status==='approved')}
@@ -1279,7 +1421,7 @@ function drawDash(){
     <div class="rb"><b>${esc(r.team)} · ${esc(r.name)}</b><p>${esc(r.prompt)}</p>
     <div class="aiacts"><button class="btn sm" data-tcopyp="${esc(r.id)}">📋 프롬프트 복사</button><a class="btn sm" href="https://www.canva.com/" target="_blank" rel="noopener">🎨 캔바</a>
     <label class="btn sm ${r.status==='wait'?'pri':'ghost'}" style="cursor:pointer">${r.status==='wait'?'🖼️ 그림 보내기':'🔁 다시 보내기'}<input type="file" accept="image/*" hidden data-tupimg="${esc(r.id)}"></label>
-    ${r.status==='done'?'<span class="done-tag">✅ 보냄</span>':''}<button class="x" title="요청 지우기" data-tdonereq="${esc(r.id)}">🗑️</button></div></div></div>`).join(''):'<div class="empty" style="padding:16px">아직 요청이 없어요. 학생이 6단계에서 "선생님께 요청"을 누르면 여기에 나타나요.</div>';
+    ${r.status==='done'?'<span class="done-tag">✅ 보냄</span>':''}<button class="x" title="요청 지우기" data-tdonereq="${esc(r.id)}">🗑️</button></div></div></div>`).join(''):'<div class="empty" style="padding:16px">아직 요청이 없어요. 학생이 7단계에서 "선생님께 요청"을 누르면 여기에 나타나요.</div>';
   const big=$('#bigGal');if(big)big.innerHTML=approved.length?approved.map(d=>cardHTML(d,true)).join(''):'<div class="empty">아직 승인된 카드가 없어요.</div>';
 }
 let tTick=null,liveOpen=null;
@@ -1324,9 +1466,9 @@ function drawCtrl(){const p=$('#ctrlPanel');if(!p)return;const c=T.ctrl||{};cons
 /* 결과 내보내기 */
 function exportRows(){const G=T.groups||6,ids=[];for(let g=1;g<=G;g++)ids.push('g'+g);Object.keys(T.teams).forEach(id=>{if(!ids.includes(id))ids.push(id)});
   return ids.filter(id=>T.teams[id]||T.cards[id]).map(id=>{const t=T.teams[id]||{},c=T.cards[id]||{},r=c.reflect||{},tr=c.tries||{},tn=(tr.ok||0)+(tr.ng||0);
-    return{'모둠':t.group?`${t.group}모둠`:(t.team||c.team||''),'별명':t.nick||'','참여자':t.members||c.members||'','발명품':t.name||c.name||'','한 줄 소개':c.oneline||'','해결하려는 문제':t.problem||c.problem||'',
+    return{'모둠':t.group?`${t.group}모둠`:(t.team||c.team||''),'별명':t.nick||'','참여자':t.members||c.members||'','발명품':t.name||c.name||'','한 줄 소개':c.oneline||'','해결하려는 문제':t.problem||c.problem||'','사용한 발명 기법':(t.ideaTools||(c.idea&&c.idea.tools)||[]).join(', '),'선택한 아이디어':t.ideaPick||(c.idea&&c.idea.pick)||'',
       'AI 감각':SN(t.sense||c.sense).t,'구별할 것':(t.classes||c.classes||[]).map(x=>x.name+(x.count!=null?`(${x.count})`:'')).join(', '),'학습 자료 수':t.total||c.total||0,
-      '시험 정확도(%)':t.acc??c.acc??'','시험 횟수':t.tests||c.tests||0,'가장 헷갈린 것':t.confuse||c.confuse||'','실험실 미션':t.missions||c.missions||'',
+      '시험 정확도(%)':t.acc??c.acc??'','시험 횟수':t.tests||c.tests||0,'정확도 변화(차수별)':t.roundsTxt||c.roundsTxt||'','가장 헷갈린 것':t.confuse||c.confuse||'','실험실 미션':t.missions||c.missions||'',
       '잘 알아챈 때':r.good||'','AI가 틀린다면':r.wrong||'','더 좋게 만들려면':r.better||'','카드 상태':{approved:'승인',pending:'승인 대기',rejected:'다시 고치기'}[c.status]||(c.name?'승인 대기':'미제출'),
       '친구 체험 정확도(%)':tn?Math.round((tr.ok||0)/tn*100):'','친구 체험 횟수':tn||'','진행 단계':t.step!=null?`${t.step+1}. ${STEPS[t.step].t}`:''}})}
 async function exportXlsx(){const rows=exportRows();if(!rows.length){toast('아직 내보낼 기록이 없어요.');return}const fname=`${(T.meta?.name||'학급').replace(/[\\/:*?"<>|]/g,'')}_AI발명_결과`;
@@ -1342,7 +1484,7 @@ function printCards(which){const cards=Object.entries(T.cards).map(([id,d])=>({.
 async function openDash(code){
   await fbInit();offAll(tRefs);T={code,meta:null,open:true,teams:{},cards:{},reqs:{}};
   const mr=cRef(code,'meta'),orf=cRef(code,'open'),tr=cRef(code,'teams'),cr=cRef(code,'cards');const rr=cRef(code,'requests'),gr=cRef(code,'groups'),ctr=cRef(code,'ctrl');tRefs.push(mr,orf,tr,cr,rr,gr,ctr);
-  ctr.on('value',s=>{T.ctrl=s.val()||{};drawCtrl()});
+  ctr.on('value',s=>{T.ctrl=s.val()||{};const vmEl=$('#tViewMode');if(vmEl)vmEl.checked=!!T.ctrl.viewMode;drawCtrl()});
   gr.on('value',s=>{T.groups=s.val()||6;const e=$('#tG');if(e)e.textContent=T.groups;drawDash()});
   rr.on('value',s=>{T.reqs=s.val()||{};drawDash()});
   mr.on('value',s=>{const first=!T.meta;T.meta=s.val();const e=$('#tTitle');if(e)e.textContent=T.meta?.name||'';if(first&&T.meta?.kind==='training')renderTeacher()});
@@ -1408,7 +1550,7 @@ async function loadModel(){
   try{await ensureExtractor(s);if(!knn)knn=knnClassifier.create();
     let n=0;if(restoredFor!==s){restoredFor=s;n=await restoreDataset()}
     setStatus(n?`🧠 준비 완료! 지난번에 가르친 ${SN(s).noun} ${n}${SN(s).unit}를 그대로 불러왔어요.`:`🧠 ${SN(s).t} 준비 완료! ${SN(s).noun}를 모아 주세요.`);
-    if(S.step===4){renderRun();if(!trainedReady())setStatus('⚠️ 아직 가르치지 않은 종류가 있어요. 4단계에서 모든 종류를 가르쳐 주세요.')}
+    if(S.step===5){renderRun();if(!trainedReady())setStatus('⚠️ 아직 가르치지 않은 종류가 있어요. 5단계에서 모든 종류를 가르쳐 주세요.')}
   }catch(e){setStatus('⚠️ AI를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.');const st=$('#stage');if(st)st.innerHTML='<div class="big">📡</div><div class="say">AI를 불러오지 못했어요</div><div class="who">인터넷 연결을 확인하고 새로고침해 주세요</div>'}
   renderCollect();
 }
@@ -1432,7 +1574,7 @@ async function mountMedia(s=sense()){
     await waitFor(()=>video.readyState>=2,4000);
     camOn=true;const m=box.querySelector('#camMsg');if(m)m.remove();
   }
-  if(S.step===3)renderCollect();
+  if(S.step===4)renderCollect();
 }
 /* 듣는 AI : 소리를 그림(스펙트로그램)으로 */
 let micStream=null;
@@ -1547,38 +1689,41 @@ function toast(t){let d=$('#toast');if(!d){d=document.createElement('div');d.id=
 document.addEventListener('click',async e=>{
   const t=e.target.closest('button,[data-go]');if(!t)return;
   if(t.dataset.go!=null){go(+t.dataset.go);return}
+  if(ideaClick(t))return;
   if(t.dataset.place!=null){S.place=t.dataset.place;save();document.querySelectorAll('#places button').forEach(b=>b.classList.toggle('on',b===t));const i=document.querySelector('[data-k=place]');if(i)i.value=S.place;upProb();return}
   if(t.dataset.ex!=null){const x=EXAMPLES[+t.dataset.ex];
     if(((knn&&Object.keys(knn.getClassExampleCount()).length)||S.dataSaved)&&!confirm('예시로 바꾸면 지금 가르친 사진이 지워져요. 계속할까요?'))return;
     resetKnn();clearDataset();endBias();
-    Object.assign(S,{sense:x.s||'image',testLog:[],mistakes:[],missions:{},name:x.name,emoji:x.e,place:x.place,who:x.who,when:x.when,what:x.what,problem:'',savedThumbs:{},test:{ok:0,ng:0},drawing:'',drawingLayer:'',parts:[],aiImage:'',ai:null,
-      classes:x.cls.map(c=>mk(...c))});save();toast(`"${x.name}"로 시작해요!`);go(S.kind==='training'?2:1);return}
+    Object.assign(S,{idea:null,rounds:[],sense:x.s||'image',testLog:[],mistakes:[],missions:{},name:x.name,emoji:x.e,place:x.place,who:x.who,when:x.when,what:x.what,problem:'',savedThumbs:{},test:{ok:0,ng:0},drawing:'',drawingLayer:'',parts:[],aiImage:'',ai:null,
+      classes:x.cls.map(c=>mk(...c))});save();toast(`"${x.name}"로 시작해요!`);go(S.kind==='training'?3:1);return}
   if(t.hasAttribute('data-reset')){if(!confirm('지금까지 만든 내용을 모두 지우고 새로 시작할까요?'))return;resetKnn();clearDataset();endBias();const keep={classCode:S.classCode,className:S.className,teamId:S.teamId,solo:S.solo,group:S.group,nick:S.nick,team:S.group?`${S.group}모둠`:'',kind:S.kind,gotoSeen:S.gotoSeen};S=Object.assign(fresh(),keep);save();render();return}
   if(t.hasAttribute('data-addcls')){S.classes.push(mk('⭐','',''));save();render();return}
   if(t.hasAttribute('data-addbg')){S.classes.push(sense()==='sound'?mk('🤫','조용함','','none'):mk('🫥','아무것도 없음','','none'));save();render();return}
-  if(t.dataset.sense){const s=t.dataset.sense;if(s===sense())return;const has=(knn&&Object.keys(knn.getClassExampleCount()).length)||S.dataSaved;if(has&&!confirm('AI의 감각을 바꾸면 지금까지 가르친 내용이 지워져요. 바꿀까요?'))return;resetKnn();clearDataset();endBias();S.sense=s;S.savedThumbs={};S.test={ok:0,ng:0};S.testLog=[];S.mistakes=[];S.missions={};save();render();toast(`${SN(s).e} ${SN(s).t}로 정했어요!`);return}
+  if(t.dataset.sense){const s=t.dataset.sense;if(s===sense())return;const has=(knn&&Object.keys(knn.getClassExampleCount()).length)||S.dataSaved;if(has&&!confirm('AI의 감각을 바꾸면 지금까지 가르친 내용이 지워져요. 바꿀까요?'))return;resetKnn();clearDataset();endBias();S.sense=s;S.savedThumbs={};S.rounds=[];S.test={ok:0,ng:0};S.testLog=[];S.mistakes=[];S.missions={};save();render();toast(`${SN(s).e} ${SN(s).t}로 정했어요!`);return}
   if(t.dataset.delcls){if(S.classes.length<=2)return;const id=t.dataset.delcls;S.classes=S.classes.filter(c=>c.id!==id);if(knn&&knn.getClassExampleCount()[id])knn.clearClass(id);delete thumbs[id];save();saveDataset();render();return}
   if(t.dataset.clear){const id=t.dataset.clear;if(knn&&knn.getClassExampleCount()[id])knn.clearClass(id);delete thumbs[id];renderCollect();saveDataset();return}
   if(t.dataset.test){t.dataset.test==='ok'?judgeOK():judgeNG();return}
+  if(t.hasAttribute('data-newround')){const tt=S.test.ok+S.test.ng;if(tt<3){toast('먼저 3번 이상 시험해 주세요.');return}S.rounds=S.rounds||[];S.rounds.push({ok:S.test.ok,ng:S.test.ng,total:curTotal()});S.test={ok:0,ng:0};save();updAcc();refreshRounds();
+    logAct(`📌 ${S.rounds.length}차 시험 기록을 저장했어요 (${roundsList()[S.rounds.length-1].acc}%)`);toast(`📌 ${S.rounds.length}차 기록을 저장했어요! AI를 더 가르친 뒤 다시 시험해 보세요.`);return}
   if(t.dataset.flip){S.facing=camFacing()==='user'?'environment':'user';save();stopCam();const s=document.querySelector('.overlay.try')&&tryModel?(tryModel.sense||'image'):sense();await mountMedia(s);toast(camFacing()==='user'?'앞 카메라로 바꿨어요':'뒤 카메라로 바꿨어요');return}
   if(t.dataset.try){openTry(t.dataset.try);return}
   if(t.hasAttribute('data-tryclose')){closeTry();return}
   if(t.dataset.tryv){tryVote(t.dataset.tryv);return}
   if(t.dataset.truth){judgeTruth(t.dataset.truth);return}
   if(t.dataset.teachfix){teachFix(t.dataset.teachfix);return}
-  if(t.hasAttribute('data-clearlog')){if(!confirm('헷갈림 노트 기록을 지울까요?'))return;S.testLog=[];S.mistakes=[];S.test={ok:0,ng:0};save();updAcc();$('#confPanel').innerHTML=confusionHTML();return}
+  if(t.hasAttribute('data-clearlog')){if(!confirm('헷갈림 노트 기록을 지울까요?'))return;S.testLog=[];S.mistakes=[];S.test={ok:0,ng:0};save();updAcc();refreshRounds();$('#confPanel').innerHTML=confusionHTML();return}
   if(t.dataset.mres){const [id,r]=t.dataset.mres.split(':');S.missions=S.missions||{};S.missions[id]={...(S.missions[id]||{}),res:r};openMis=id;logAct(`실험 미션 '${(MISSIONS.find(m=>m.id===id)||{}).t}' 결과: ${r==='ok'?'잘 맞힘':'헷갈림'}`,'mres'+id+r,5000);save();refreshRunPanels();const ta=document.querySelector(`[data-mnote="${id}"]`);if(ta)ta.focus();return}
   if(t.dataset.bias){openMis='unfair';startBias(t.dataset.bias);return}
   if(t.hasAttribute('data-biasend')){endBias();toast('원래 AI로 돌아왔어요.');return}
   if(t.hasAttribute('data-present')){setPresent(!document.body.classList.contains('present'));return}
-  if(t.hasAttribute('data-presentgo')){go(4);if(S.step===4)setTimeout(()=>setPresent(true),50);return}
+  if(t.hasAttribute('data-presentgo')){go(5);if(S.step===5)setTimeout(()=>setPresent(true),50);return}
   if(t.hasAttribute('data-print')){$('#printArea').innerHTML=cardHTML(cardData());setTimeout(()=>window.print(),100);return}
   if(t.hasAttribute('data-publish')){const d=cardData();
     if(!d.name){toast('발명품 이름을 적어 주세요!');return}
     if(FIREBASE_CONFIG&&S.classCode){try{await fbInit();const ref=cRef(S.classCode,'cards/'+S.teamId);
-        const prev=(await ref.get()).val()||{};const shared=await shareModel();delete d.id;await ref.set({...d,likes:prev.likes||{},tries:prev.tries||{},hasModel:shared,status:'pending',note:''});S.cardId=S.teamId;S.cardStatus='pending';save();syncNow();toast('제출했어요! 선생님이 확인하면 갤러리에 올라가요.');logAct('📮 발명 카드를 제출했어요');go(6)}
+        const prev=(await ref.get()).val()||{};const shared=await shareModel();delete d.id;await ref.set({...d,likes:prev.likes||{},tries:prev.tries||{},hasModel:shared,status:'pending',note:''});S.cardId=S.teamId;S.cardStatus='pending';save();syncNow();toast('제출했어요! 선생님이 확인하면 갤러리에 올라가요.');logAct('📮 발명 카드를 제출했어요');go(7)}
       catch(err){toast('올리지 못했어요. 인터넷을 확인해 주세요.')}}
-    else{const g=localGal();if(!S.cardId){S.cardId=uid()}d.id=S.cardId;const i=g.findIndex(x=>x.id===d.id);if(i>=0){d.likes=g[i].likes;g[i]=d}else g.push(d);setLocalGal(g);save();toast('갤러리에 올렸어요! 🎉');go(6)}
+    else{const g=localGal();if(!S.cardId){S.cardId=uid()}d.id=S.cardId;const i=g.findIndex(x=>x.id===d.id);if(i>=0){d.likes=g[i].likes;g[i]=d}else g.push(d);setLocalGal(g);save();toast('갤러리에 올렸어요! 🎉');go(7)}
     return}
   if(t.dataset.like){const id=t.dataset.like,em=t.dataset.e;
     if(FIREBASE_CONFIG&&(mode==='teacher'?T.code:S.classCode)){cRef(mode==='teacher'?T.code:S.classCode,'cards/'+id+'/likes/'+em).transaction(v=>(v||0)+1)}
@@ -1623,6 +1768,7 @@ document.addEventListener('click',async e=>{
   if(t.dataset.vstep){vStep(+t.dataset.vstep);return}
   if(t.hasAttribute('data-vshowclose')){document.querySelectorAll('.overlay.vshow').forEach(o=>o.remove());return}
   if(t.hasAttribute('data-vedit')){setMode('student');return}
+  if(t.hasAttribute('data-masterok')){masterCheck();return}
   if(t.hasAttribute('data-teacher')){setMode('teacher');return}
   if(t.hasAttribute('data-student')){setMode('student');return}
   if(t.hasAttribute('data-tcreate')){tCreate();return}
@@ -1660,17 +1806,20 @@ document.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.k&&SHARED_KEYS.has('k_'+t.dataset.k))writeShared('k_'+t.dataset.k,t.value);
   if(t.dataset.r&&SHARED_KEYS.has('r_'+t.dataset.r))writeShared('r_'+t.dataset.r,t.value);
+  if(t.dataset.idea!=null){ideaSet(t.dataset.idea,t.value);save();return}
+  if(t.dataset.itext){const x=ideaP().ideas.find(y=>y.id===t.dataset.itext);if(x){x.text=t.value;save()}return}
   if(t.dataset.hs){writeShared(t.dataset.hs,t.value);return}
-  if(t.dataset.k){S[t.dataset.k]=t.value;if(t.dataset.k==='nick'){S.team=teamLabel();renderStepper()}save();if(['place','who','when','what'].includes(t.dataset.k))upProb();if(t.dataset.k==='team')renderStepper();if(['name','team','nick'].includes(t.dataset.k))recompose();if(['name','oneline','place'].includes(t.dataset.k)&&!aiP().edited){const p=$('#aiPrompt');if(p)p.value=buildPrompt()}if(S.step===5)upCard();if(S.step===2)upRules();return}
+  if(t.dataset.k){S[t.dataset.k]=t.value;if(t.dataset.k==='nick'){S.team=teamLabel();renderStepper()}save();if(['place','who','when','what'].includes(t.dataset.k))upProb();if(t.dataset.k==='team')renderStepper();if(['name','team','nick'].includes(t.dataset.k))recompose();if(['name','oneline','place'].includes(t.dataset.k)&&!aiP().edited){const p=$('#aiPrompt');if(p)p.value=buildPrompt()}if(S.step===6)upCard();if(S.step===3)upRules();return}
   if(t.dataset.ai){const a=aiP();if(t.dataset.ai==='prompt'){a.prompt=t.value;a.edited=true}else{a[t.dataset.ai]=t.value;if(!a.edited){const p=$('#aiPrompt');if(p)p.value=buildPrompt()}}save();return}
   if(t.dataset.r){S.reflect[t.dataset.r]=t.value;save();upCard();return}
   if(t.dataset.mnote){S.missions=S.missions||{};S.missions[t.dataset.mnote]={...(S.missions[t.dataset.mnote]||{}),note:t.value};save();return}
   if(t.dataset.cls){const c=S.classes.find(x=>x.id===t.dataset.cls);if(c){c[t.dataset.f]=t.value;save();upRules()}return}
   if(t.id==='thr'){threshold=+t.value;$('#thrV').textContent=threshold+'%';mainRunner.reset();return}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='joinCode')lookupClass()});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='joinCode')lookupClass();if(e.key==='Enter'&&e.target.id==='masterPw')masterCheck()});
 document.addEventListener('change',e=>{const t=e.target;
   if(t.id==='tOpen'){cRef(T.code,'open').set(t.checked);return}
+  if(t.id==='tViewMode'){cRef(T.code,'ctrl/viewMode').set(t.checked?true:null);toast(t.checked?'👀 보기 모드로 바꿨어요. 이제 들어오는 학생은 보기 전용이에요.':'✏️ 편집 모드로 돌아왔어요.');return}
   if(t.id==='cpLiveCam'){cRef(T.code,'ctrl/liveCam').set(t.checked);return}
   if(t.id==='tts'){ttsOn=t.checked;if(!ttsOn)try{speechSynthesis.cancel()}catch(_){};return}
   if(t.id==='adFile'&&t.files[0]){loadPadImage(t.files[0]);t.value='';return}
@@ -1691,7 +1840,7 @@ window.addEventListener('blur',endHold);
 document.addEventListener('pointerdown',()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume();const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}catch(e){}},{once:true,capture:true});
 
 render();
-if(mode==='student'&&S.dataSaved&&S.step<3)loadModel();
+if(mode==='student'&&S.dataSaved&&S.step<4)loadModel();
 if(mode==='student'&&S.step>0&&S.visited.length>1)setTimeout(()=>toast(`지난번에 하던 ${S.step+1}단계 '${STEPS[S.step].t}'부터 이어서 해요!`),400);
 </script>
 </body>
