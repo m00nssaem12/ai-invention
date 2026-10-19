@@ -11,7 +11,7 @@
 :root{
   --desk:#e9edf4; --paper:#ffffff; --ink:#26324a; --ink-2:#5d6982; --rule:#c8d2e2; --grid:#dfe6f1;
   --note:#fff4b8; --tape:rgba(255,255,255,.55); --bulb:#ffd23f; --cheek:#ffb3c1;
-  --coral:#ff7a59; --sky:#3b8fe0; --leaf:#34ad74; --sun:#f0a019; --grape:#8a63d2; --rose:#e6608c;
+  --coral:#ff7a59; --sky:#3b8fe0; --leaf:#34ad74; --sun:#f0a019; --grape:#8a63d2; --rose:#e6608c; --teal:#1aa6a0;
   --f-display:'Jua','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   --f-body:'Gowun Dodum','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   --f-hand:'Gaegu','Gowun Dodum','Noto Sans KR',sans-serif;
@@ -46,7 +46,7 @@ button,input{font:inherit;color:inherit}
   width:210mm;height:297mm;background:var(--paper);position:relative;overflow:hidden;padding:12mm 17mm 11mm 13mm;
   box-shadow:0 1px 0 #cfd6e3,0 18px 40px -18px rgba(38,50,74,.45);display:flex;flex-direction:column;gap:3.6mm;zoom:var(--z,1)}
 .page>*{flex-shrink:0}
-.c-coral{--c:var(--coral)}.c-sky{--c:var(--sky)}.c-leaf{--c:var(--leaf)}.c-sun{--c:var(--sun)}.c-grape{--c:var(--grape)}.c-rose{--c:var(--rose)}
+.c-coral{--c:var(--coral)}.c-sky{--c:var(--sky)}.c-leaf{--c:var(--leaf)}.c-sun{--c:var(--sun)}.c-grape{--c:var(--grape)}.c-rose{--c:var(--rose)}.c-teal{--c:var(--teal)}
 body.bw .page{--c:#4a4a4a;--cs:#f1f1f1;--cm:#d5d5d5}
 body.bw{--bulb:#e6e6e6;--cheek:#e2e2e2;--note:#f4f4f4}
 
@@ -231,7 +231,7 @@ body.bw .hero .bigbot{color:#9a9a9a}
 .map h3{position:absolute;left:4mm;top:2.6mm;margin:0;font-family:var(--f-display);font-weight:400;font-size:12pt}
 .map h3 small{font-family:var(--f-body);font-size:8.4pt;color:var(--ink-2);margin-left:2mm}
 .map svg.path{position:absolute;inset:0;width:100%;height:100%}
-.stop{position:absolute;width:30mm;display:flex;flex-direction:column;align-items:center;gap:.8mm;transform:translate(-50%,-50%);text-align:center}
+.stop{position:absolute;width:25mm;display:flex;flex-direction:column;align-items:center;gap:.8mm;transform:translate(-50%,-50%);text-align:center}
 .stop .dot{width:14mm;height:14mm;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;border:1mm solid #fff;box-shadow:0 0 0 .4mm var(--c)}
 .stop .dot svg{width:7.4mm;height:7.4mm}
 .stop b{font-family:var(--f-display);font-weight:400;font-size:10pt;line-height:1.1;background:#fff;padding:.4mm 1.4mm;border-radius:1.4mm}
@@ -328,12 +328,13 @@ body.bw .hero .bigbot{color:#9a9a9a}
   <div class="map">
     <h3>연구 지도<small>한 단계를 마칠 때마다 동그라미에 완료 도장을 받아요</small></h3>
     <svg class="path" viewBox="0 0 176 62" preserveAspectRatio="none" aria-hidden="true"><path d="M16 38 C 34 16, 50 16, 46 36 S 70 56, 78 36 S 104 14, 110 34 S 136 56, 144 36 S 160 20, 162 30" fill="none" stroke="#c8d2e2" stroke-width="1.2" stroke-dasharray="2.2 2"/></svg>
-    <div class="stop c-coral" style="left:10%;top:62%"><div class="dot"><svg><use href="#i-search"/></svg></div><b>1. 불편 찾기</b><div class="done">완료</div></div>
-    <div class="stop c-sky" style="left:26%;top:40%"><div class="dot"><svg><use href="#i-pencil"/></svg></div><b>2. 설계하기</b><div class="done">완료</div></div>
-    <div class="stop c-leaf" style="left:43%;top:62%"><div class="dot"><svg><use href="#i-camera"/></svg></div><b>3. 가르치기</b><div class="done">완료</div></div>
-    <div class="stop c-sun" style="left:60%;top:40%"><div class="dot"><svg><use href="#i-check"/></svg></div><b>4. 시험하기</b><div class="done">완료</div></div>
-    <div class="stop c-grape" style="left:76%;top:62%"><div class="dot"><svg><use href="#i-flask"/></svg></div><b>5. 실험하기</b><div class="done">완료</div></div>
-    <div class="stop c-rose" style="left:91%;top:40%"><div class="dot"><svg><use href="#i-star"/></svg></div><b>6. 나누기</b><div class="done">완료</div></div>
+    <div class="stop c-coral" style="left:8%;top:62%"><div class="dot"><svg><use href="#i-search"/></svg></div><b>1. 불편 찾기</b><div class="done">완료</div></div>
+    <div class="stop c-teal" style="left:22%;top:40%"><div class="dot"><svg><use href="#i-bulb"/></svg></div><b>2. 아이디어</b><div class="done">완료</div></div>
+    <div class="stop c-sky" style="left:36%;top:62%"><div class="dot"><svg><use href="#i-pencil"/></svg></div><b>3. 설계하기</b><div class="done">완료</div></div>
+    <div class="stop c-leaf" style="left:50%;top:40%"><div class="dot"><svg><use href="#i-camera"/></svg></div><b>4. 가르치기</b><div class="done">완료</div></div>
+    <div class="stop c-sun" style="left:64%;top:62%"><div class="dot"><svg><use href="#i-check"/></svg></div><b>5. 시험하기</b><div class="done">완료</div></div>
+    <div class="stop c-grape" style="left:78%;top:40%"><div class="dot"><svg><use href="#i-flask"/></svg></div><b>6. 실험하기</b><div class="done">완료</div></div>
+    <div class="stop c-rose" style="left:92%;top:62%"><div class="dot"><svg><use href="#i-star"/></svg></div><b>7. 나누기</b><div class="done">완료</div></div>
   </div>
   <div class="pf"><span><b>AI 발명 연구 노트</b> · 웹도구 'AI 발명 연구소'와 함께 써요</span><span>made by m00n</span></div>
 </section>
@@ -375,7 +376,7 @@ body.bw .hero .bigbot{color:#9a9a9a}
         <tr><td class="num">3</td><td class="ck"><span class="sq"></span></td><td class="ck"><span class="sq"></span></td><td class="ck"><span class="sq"></span></td><td></td></tr>
       </tbody>
     </table>
-    <div class="tip"><svg class="bot"><use href="#bot"/></svg><div class="bubble">"캔이냐 페트병이냐", "손을 들었냐 안 들었냐"처럼 <b>몇 가지로 나눌 수 있으면</b> AI가 구별하기 쉬워!</div></div>
+    <div class="tip"><svg class="bot"><use href="#bot"/></svg><div class="bubble">"캔이냐 페트병이냐", "손을 들었냐 안 들었냐", "박수냐 말소리냐"처럼 <b>몇 가지로 나눌 수 있으면</b> AI가 구별하기 쉬워!</div></div>
   </div>
 
   <div class="act">
@@ -388,14 +389,66 @@ body.bw .hero .bigbot{color:#9a9a9a}
     </div>
     <div class="write"><div class="q">이 문제를 고른 까닭은 무엇인가요?</div><div class="lines" style="--n:3"></div></div>
   </div>
-  <div class="pf"><span><b>활동 1</b> · 웹도구 2단계 '문제 찾기'와 함께 해요</span><span>1 / 6</span></div>
+  <div class="pf"><span><b>활동 1</b> · 웹도구 2단계 '문제 찾기'와 함께 해요</span><span>1 / 7</span></div>
 </section>
 
-<!-- ===================== 2. 설계 ===================== -->
-<section class="page c-sky" id="p2" data-name="2 설계하기">
-  <div class="tab"><b>2</b><span>설계하기</span></div>
+<!-- ===================== 2. 아이디어 ===================== -->
+<section class="page c-teal" id="p2" data-name="2 아이디어 내기">
+  <div class="tab"><b>2</b><span>아이디어</span></div>
   <header class="ph">
-    <div><div class="k">AI 발명 연구 노트 · 활동 2</div><h1>AI 발명품 설계하기</h1></div>
+    <div><div class="k">AI 발명 연구 노트 · 활동 2</div><h1>해결 아이디어 만들기</h1></div>
+    <div class="who"><div class="row"><span class="lbl">5학년</span><span class="bx fill-class"></span><span class="lbl">반</span><span class="bx"></span><span class="lbl">번</span><span class="bx"></span><span class="lbl">모둠</span></div><div class="row"><span class="lbl">이름</span><span class="bx w"></span></div></div>
+  </header>
+  <div class="goal"><svg><use href="#i-bulb"/></svg><p><b>배움 문제</b>발명 기법으로 해결 아이디어를 여러 개 만들고, 가장 좋은 하나를 고를 수 있어요.</p></div>
+
+  <div class="act">
+    <div class="ah"><span class="n">활동 1</span><h2>스캠퍼로 아이디어 내기</h2><span class="sub">떠오르는 칸만 써도 돼요.</span></div>
+    <table class="wt" style="--rh:8mm">
+      <thead><tr><th style="width:30mm">스캠퍼 질문</th><th style="width:66mm">이렇게 생각해 봐요</th><th>우리 발명품은?</th></tr></thead>
+      <tbody>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">S</b> 대체하기</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">카메라 대신 마이크나 자세로 바꾸면?</td><td></td></tr>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">C</b> 결합하기</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">불빛·소리·화면을 합치면?</td><td></td></tr>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">A</b> 적용하기</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">다른 곳의 비슷한 장치를 가져오면?</td><td></td></tr>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">M</b> 바꾸기</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">크기·모양·소리를 키우거나 줄이면?</td><td></td></tr>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">P</b> 다른 용도</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">다른 문제·다른 사람에게 쓰면?</td><td></td></tr>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">E</b> 없애기</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">빼도 되는 부품·과정은?</td><td></td></tr>
+        <tr><td><b style="font-family:var(--f-display);color:var(--c)">R</b> 거꾸로·다시</td><td class="ck" style="text-align:left;white-space:normal;font-size:8.6pt">순서를 바꾸거나 거꾸로 하면?</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="act">
+    <div class="ah"><span class="n">활동 2</span><h2>다른 기법도 써 볼까요?</h2><span class="sub">끌리는 기법을 골라 써요.</span></div>
+    <div class="two" style="--cols:1fr 1fr 1fr">
+      <div class="write"><div class="q">역발상: 보통 방법을 거꾸로 뒤집으면?</div><div class="lines" style="--n:3"></div></div>
+      <div class="write"><div class="q">강제결합법: 물건 + AI 능력을 합치면?</div><div class="lines" style="--n:3"></div></div>
+      <div class="write"><div class="q">결점 열거법: 지금 물건의 결점을 고치면?</div><div class="lines" style="--n:3"></div></div>
+    </div>
+  </div>
+
+  <div class="act">
+    <div class="ah"><span class="n">활동 3</span><h2>아이디어 모아 고르기</h2><span class="sub">별 3개로 점수를 매겨요.</span></div>
+    <table class="wt" style="--rh:8.2mm">
+      <thead><tr><th style="width:8mm"></th><th>아이디어 (어떤 기법으로 나왔나요?)</th><th style="width:22mm">AI 구별</th><th style="width:22mm">만들기</th><th style="width:22mm">해결</th><th style="width:12mm">합계</th><th style="width:11mm">고름</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1</td><td></td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">/ 9</td><td class="ck"><span class="sq" style="border-radius:50%"></span></td></tr>
+        <tr><td class="num">2</td><td></td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">/ 9</td><td class="ck"><span class="sq" style="border-radius:50%"></span></td></tr>
+        <tr><td class="num">3</td><td></td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">/ 9</td><td class="ck"><span class="sq" style="border-radius:50%"></span></td></tr>
+        <tr><td class="num">4</td><td></td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">/ 9</td><td class="ck"><span class="sq" style="border-radius:50%"></span></td></tr>
+        <tr><td class="num">5</td><td></td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">☆ ☆ ☆</td><td class="ck">/ 9</td><td class="ck"><span class="sq" style="border-radius:50%"></span></td></tr>
+      </tbody>
+    </table>
+    <div class="write"><div class="q">우리 모둠이 고른 아이디어와 그 까닭은?</div><div class="lines" style="--n:2"></div></div>
+    <div class="tip"><svg class="bot"><use href="#bot"/></svg><div class="bubble">처음 떠오른 생각만 고르면 아까워! <b>많이 낸 다음에 골라야</b> 더 좋은 발명이 돼.</div></div>
+  </div>
+  <div class="pf"><span><b>활동 2</b> · 웹도구 3단계 '아이디어 내기'와 함께 해요</span><span>2 / 7</span></div>
+</section>
+
+<!-- ===================== 3. 설계 ===================== -->
+<section class="page c-sky" id="p3" data-name="3 설계하기">
+  <div class="tab"><b>3</b><span>설계하기</span></div>
+  <header class="ph">
+    <div><div class="k">AI 발명 연구 노트 · 활동 3</div><h1>AI 발명품 설계하기</h1></div>
     <div class="who"><div class="row"><span class="lbl">5학년</span><span class="bx fill-class"></span><span class="lbl">반</span><span class="bx"></span><span class="lbl">번</span><span class="bx"></span><span class="lbl">모둠</span></div><div class="row"><span class="lbl">이름</span><span class="bx w"></span></div></div>
   </header>
   <div class="goal"><svg><use href="#i-bulb"/></svg><p><b>배움 문제</b>AI가 구별할 종류와 반응을 정해 발명품을 설계할 수 있어요.</p></div>
@@ -426,7 +479,7 @@ body.bw .hero .bigbot{color:#9a9a9a}
         <tr><td class="num">5</td><td class="pre">아무것도 없음 (조용함)</td><td class="pre">조용히 기다려요</td><td class="ck">소리 없음</td></tr>
       </tbody>
     </table>
-    <div class="tip r"><svg class="bot"><use href="#bot"/></svg><div class="bubble"><b>"아무것도 없음"</b>을 안 가르치면, 나는 빈 화면을 보고도 "캔이다!" 하고 우길 거야.</div></div>
+    <div class="tip r"><svg class="bot"><use href="#bot"/></svg><div class="bubble"><b>"아무것도 없음"</b>을 안 가르치면, 나는 텅 빈 화면이나 조용한 순간에도 배운 것 중 하나라고 우길 거야.</div></div>
   </div>
 
   <div class="act">
@@ -444,14 +497,14 @@ body.bw .hero .bigbot{color:#9a9a9a}
       </table>
     </div>
   </div>
-  <div class="pf"><span><b>활동 2</b> · 웹도구 3단계 'AI 설계'와 함께 해요</span><span>2 / 6</span></div>
+  <div class="pf"><span><b>활동 3</b> · 웹도구 4단계 'AI 설계'와 함께 해요</span><span>3 / 7</span></div>
 </section>
 
 <!-- ===================== 3. 가르치기 ===================== -->
-<section class="page c-leaf" id="p3" data-name="3 가르치기">
-  <div class="tab"><b>3</b><span>가르치기</span></div>
+<section class="page c-leaf" id="p4" data-name="4 가르치기">
+  <div class="tab"><b>4</b><span>가르치기</span></div>
   <header class="ph">
-    <div><div class="k">AI 발명 연구 노트 · 활동 3</div><h1>AI 가르치기</h1></div>
+    <div><div class="k">AI 발명 연구 노트 · 활동 4</div><h1>AI 가르치기</h1></div>
     <div class="who"><div class="row"><span class="lbl">5학년</span><span class="bx fill-class"></span><span class="lbl">반</span><span class="bx"></span><span class="lbl">번</span><span class="bx"></span><span class="lbl">모둠</span></div><div class="row"><span class="lbl">이름</span><span class="bx w"></span></div></div>
   </header>
   <div class="goal"><svg><use href="#i-bulb"/></svg><p><b>배움 문제</b>AI를 잘 가르치려면 자료가 많고 다양해야 한다는 것을 알 수 있어요.</p></div>
@@ -484,8 +537,8 @@ body.bw .hero .bigbot{color:#9a9a9a}
   <div class="act">
     <div class="ah"><span class="n">활동 3</span><h2>다양하게 모았나요?</h2><span class="sub">해낸 것에 ✓ 표시해요.</span></div>
     <div class="checks">
-      <div><span class="sq"></span>여러 방향에서 보여 줬어요 (앞·옆·뒤)</div>
-      <div><span class="sq"></span>가까이도, 멀리도 보여 줬어요</div>
+      <div><span class="sq"></span>여러 모습(소리)으로 보여 줬어요 (앞·옆·뒤 / 크게·작게)</div>
+      <div><span class="sq"></span>가까이도, 멀리도 보여 줬어요 (소리는 가까이·멀리서)</div>
       <div><span class="sq"></span>모둠 친구 여러 명이 돌아가며 했어요</div>
       <div><span class="sq"></span>밝은 곳·어두운 곳(조용한 곳·시끄러운 곳)에서 모았어요</div>
       <div><span class="sq"></span>종류마다 개수를 비슷하게 맞췄어요</div>
@@ -496,21 +549,21 @@ body.bw .hero .bigbot{color:#9a9a9a}
   <div class="act">
     <div class="ah"><span class="n">띵봇 퀴즈</span><h2>어떤 자료가 나를 더 똑똑하게 할까?</h2></div>
     <div class="quiz">
-      <div class="qset"><b>A</b><div class="cans" data-rot="0,0,0,0,0,0"></div><small>같은 방향으로 찍은 캔 30장</small></div>
+      <div class="qset"><b>A</b><div class="cans" data-rot="0,0,0,0,0,0"></div><small>한 가지 모습(소리)만 모은 자료 30개</small></div>
       <div class="vs">vs</div>
-      <div class="qset"><b>B</b><div class="cans" data-rot="0,35,-60,90,160,-20"></div><small>여러 방향·거리로 찍은 캔 30장</small></div>
+      <div class="qset"><b>B</b><div class="cans" data-rot="0,35,-60,90,160,-20"></div><small>여러 모습(소리)으로 모은 자료 30개</small></div>
       <div class="qans"><span>내 답</span><span class="ring" style="width:9mm;height:9mm">&nbsp;</span><span>까닭</span><div class="lines" style="--n:1;--lh:7mm;flex:1"></div></div>
     </div>
   </div>
   <div class="write"><div class="q">AI를 가르칠 때 가장 어려웠던 점과 그 까닭은?</div><div class="lines" style="--n:1"></div></div>
-  <div class="pf"><span><b>활동 3</b> · 웹도구 4단계 'AI 가르치기'와 함께 해요</span><span>3 / 6</span></div>
+  <div class="pf"><span><b>활동 4</b> · 웹도구 5단계 'AI 가르치기'와 함께 해요</span><span>4 / 7</span></div>
 </section>
 
 <!-- ===================== 4. 시험 ===================== -->
-<section class="page c-sun" id="p4" data-name="4 시험하기">
-  <div class="tab"><b>4</b><span>시험하기</span></div>
+<section class="page c-sun" id="p5" data-name="5 시험하기">
+  <div class="tab"><b>5</b><span>시험하기</span></div>
   <header class="ph">
-    <div><div class="k">AI 발명 연구 노트 · 활동 4</div><h1>작동 시험과 헷갈림 노트</h1></div>
+    <div><div class="k">AI 발명 연구 노트 · 활동 5</div><h1>작동 시험과 헷갈림 노트</h1></div>
     <div class="who"><div class="row"><span class="lbl">5학년</span><span class="bx fill-class"></span><span class="lbl">반</span><span class="bx"></span><span class="lbl">번</span><span class="bx"></span><span class="lbl">모둠</span></div><div class="row"><span class="lbl">이름</span><span class="bx w"></span></div></div>
   </header>
   <div class="goal"><svg><use href="#i-bulb"/></svg><p><b>배움 문제</b>AI가 틀리는 경우를 찾고, 왜 틀렸는지 데이터로 설명할 수 있어요.</p></div>
@@ -577,14 +630,14 @@ body.bw .hero .bigbot{color:#9a9a9a}
       <div class="write" style="display:flex;flex-direction:column;gap:2mm;padding-bottom:3mm"><div class="q">다시 시험한 결과</div><div style="display:flex;gap:1.6mm"><span class="ring" style="width:8mm;height:8mm"></span><span class="ring" style="width:8mm;height:8mm"></span><span class="ring" style="width:8mm;height:8mm"></span><span class="ring" style="width:8mm;height:8mm"></span><span class="ring" style="width:8mm;height:8mm"></span></div><small style="font-size:8pt;color:var(--ink-2)">맞힌 만큼 O를 그려요</small></div>
     </div>
   </div>
-  <div class="pf"><span><b>활동 4</b> · 웹도구 5단계 '작동 시험'과 함께 해요</span><span>4 / 6</span></div>
+  <div class="pf"><span><b>활동 5</b> · 웹도구 6단계 '작동 시험'과 함께 해요</span><span>5 / 7</span></div>
 </section>
 
 <!-- ===================== 5. 실험실 미션 ===================== -->
-<section class="page c-grape" id="p5" data-name="5 실험하기">
-  <div class="tab"><b>5</b><span>실험하기</span></div>
+<section class="page c-grape" id="p6" data-name="6 실험하기">
+  <div class="tab"><b>6</b><span>실험하기</span></div>
   <header class="ph">
-    <div><div class="k">AI 발명 연구 노트 · 활동 5</div><h1>AI 실험실 미션</h1></div>
+    <div><div class="k">AI 발명 연구 노트 · 활동 6</div><h1>AI 실험실 미션</h1></div>
     <div class="who"><div class="row"><span class="lbl">5학년</span><span class="bx fill-class"></span><span class="lbl">반</span><span class="bx"></span><span class="lbl">번</span><span class="bx"></span><span class="lbl">모둠</span></div><div class="row"><span class="lbl">이름</span><span class="bx w"></span></div></div>
   </header>
   <div class="goal"><svg><use href="#i-bulb"/></svg><p><b>배움 문제</b>데이터가 치우치면 AI가 공정하지 않게 판단할 수 있음을 실험으로 알 수 있어요.</p></div>
@@ -593,7 +646,7 @@ body.bw .hero .bigbot{color:#9a9a9a}
 
   <div class="missions">
     <div class="mission"><div class="mh"><svg><use href="#i-play"/></svg><div><small>미션 1</small><b>한쪽만 배운 AI</b></div></div>
-      <p>가르칠 때 쓰지 않은 방향·거리로 보여 주거나, 가르친 친구가 아닌 다른 친구가 해 봐요.</p>
+      <p>가르칠 때 쓰지 않은 방향·거리(소리는 크기·높낮이)로 보여 주거나, 가르친 친구가 아닌 다른 친구가 해 봐요.</p>
       <div class="oo">예상 <span><span class="ring">O</span><span class="ring">X</span></span> 결과 <span><span class="ring">O</span><span class="ring">X</span></span></div>
       <div class="why">왜 그랬을까?</div><div class="lines" style="--n:2"></div></div>
     <div class="mission"><div class="mh"><svg><use href="#i-scale"/></svg><div><small>미션 2</small><b>불공평한 데이터</b></div></div>
@@ -618,14 +671,14 @@ body.bw .hero .bigbot{color:#9a9a9a}
   <div class="write"><div class="q">사람을 알아보는 AI를 한쪽 친구들 사진으로만 가르친다면, 어떤 문제가 생길까요?</div><div class="lines" style="--n:2"></div></div>
 
   <div class="ribbon">AI를 공정하게 만들려면 데이터를<span class="blank"></span>해야 해요.</div>
-  <div class="pf"><span><b>활동 5</b> · 웹도구 5단계 '실험실 미션'과 함께 해요</span><span>5 / 6</span></div>
+  <div class="pf"><span><b>활동 6</b> · 웹도구 6단계 '실험실 미션'과 함께 해요</span><span>6 / 7</span></div>
 </section>
 
 <!-- ===================== 6. 나누기 ===================== -->
-<section class="page c-rose" id="p6" data-name="6 나누기">
-  <div class="tab"><b>6</b><span>나누기</span></div>
+<section class="page c-rose" id="p7" data-name="7 나누기">
+  <div class="tab"><b>7</b><span>나누기</span></div>
   <header class="ph">
-    <div><div class="k">AI 발명 연구 노트 · 활동 6</div><h1>나누고 돌아보기</h1></div>
+    <div><div class="k">AI 발명 연구 노트 · 활동 7</div><h1>나누고 돌아보기</h1></div>
     <div class="who"><div class="row"><span class="lbl">5학년</span><span class="bx fill-class"></span><span class="lbl">반</span><span class="bx"></span><span class="lbl">번</span><span class="bx"></span><span class="lbl">모둠</span></div><div class="row"><span class="lbl">이름</span><span class="bx w"></span></div></div>
   </header>
   <div class="goal"><svg><use href="#i-bulb"/></svg><p><b>배움 문제</b>친구의 발명품을 체험하며 피드백하고, AI를 책임 있게 쓰는 방법을 생각할 수 있어요.</p></div>
@@ -667,7 +720,7 @@ body.bw .hero .bigbot{color:#9a9a9a}
   </div>
 
   <div class="write"><div class="q">이번 프로젝트에서 AI에 대해 새롭게 알게 된 점은?</div><div class="lines" style="--n:2"></div></div>
-  <div class="pf"><span><b>활동 6</b> · 웹도구 6~7단계 '발명 카드·갤러리'와 함께 해요</span><span>6 / 6 · made by m00n</span></div>
+  <div class="pf"><span><b>활동 7</b> · 웹도구 7~8단계 '발명 카드·갤러리'와 함께 해요</span><span>7 / 7 · made by m00n</span></div>
 </section>
 </main>
 
