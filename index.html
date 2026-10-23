@@ -189,7 +189,7 @@ body.present .conf .r{font-size:17px;grid-template-columns:150px 1fr 56px}body.p
 .dv.grp{background:var(--soft);margin:6px -12px -10px;padding:10px 12px;border-radius:0 0 12px 12px;border-top:2px solid var(--line)}
 .live .lock{margin-left:auto;font-size:15px}
 #freeze{position:fixed;inset:0;z-index:90;background:rgba(31,42,68,.94);color:#fff;display:grid;place-items:center;text-align:center;padding:20px}
-#freeze .big{font-size:110px}#freeze h2{font-size:44px;margin:10px 0}#freeze p{font-size:24px;max-width:700px}
+#freeze .big{font-size:110px}#freeze h2{font-size:44px;margin:10px auto;max-width:900px;line-height:1.35;word-break:keep-all}#freeze p{font-size:24px;max-width:700px}
 #tpill{position:fixed;bottom:16px;left:16px;z-index:80;background:var(--ink);color:#fff;border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px;box-shadow:var(--shadow)}
 #tpill.warn{background:#f2b632;color:#3b2a00;animation:pulse .8s infinite alternate}#tpill.over{background:var(--accent)}
 .stepper button.lock{opacity:.5}
@@ -1177,7 +1177,7 @@ function applyCtrl(){
   if(mode==='student'&&!needEntry()&&!HS)renderStepper();
   let fz=$('#freeze');const myT=HS?HS.teamId:S.teamId,lk=(CTRL.lockDev||{})[DEVICE_ID]||(myT&&(CTRL.lockTeam||{})[myT]);
   if(mode==='student'&&(lk||(CTRL.freeze&&CTRL.freeze.on))){if(!fz){fz=document.createElement('div');fz.id='freeze';document.body.appendChild(fz)}
-    fz.innerHTML=lk?`<div><div class="big">🔒</div><h2>선생님이 이 기기를 잠갔어요</h2><p>선생님이 잠금을 풀면 하던 화면으로 돌아와요.</p></div>`:`<div><div class="big">👀</div><h2>선생님을 봐 주세요!</h2>${CTRL.freeze.msg?`<p>${esc(CTRL.freeze.msg)}</p>`:''}</div>`;try{speechSynthesis.cancel()}catch(e){}
+    fz.innerHTML=lk?`<div><div class="big">🔒</div><h2>선생님이 이 기기를 잠갔어요</h2><p>선생님이 잠금을 풀면 하던 화면으로 돌아와요.</p></div>`:`<div><div class="big">👀</div><h2>${esc(CTRL.freeze.msg||'선생님을 봐 주세요!')}</h2></div>`;try{speechSynthesis.cancel()}catch(e){}
     if(lk){endHold();endHelperHold();mainRunner.stop()}}
   else if(fz){fz.remove();if(mode==='student'&&!HS&&S.step===5&&!needEntry())mainRunner.start()}
   timerPill();
@@ -1549,7 +1549,7 @@ function drawLiveDetail(){let o=$('#liveDetail');const id=liveOpen;if(!id){if(o)
 
 let tGotoSel=new Set(),tGotoStep=0;
 function tLog(id,act){try{cRef(T.code,'logs/'+id).push().set({ts:Date.now(),who:'선생님',role:'teacher',act})}catch(e){}}
-function drawCtrl(){const p=$('#ctrlPanel');if(!p)return;const c=T.ctrl||{};const keepMsg=$('#cpMsg')?.value,keepLbl=$('#cpTLabel')?.value;
+let ctrlDefT=null;function drawCtrl(){const p=$('#ctrlPanel');if(!p)return;const ae=document.activeElement;if(ae&&p.contains(ae)&&(ae.tagName==='INPUT'||ae.tagName==='SELECT'||ae.tagName==='TEXTAREA')){clearTimeout(ctrlDefT);ctrlDefT=setTimeout(drawCtrl,1200);return}const c=T.ctrl||{};const keepMsg=$('#cpMsg')?.value,keepLbl=$('#cpTLabel')?.value;
   p.innerHTML=`<div class="cp"><b>🔓 열어 둘 단계</b><div class="chips">${[['제한 없음',-1],...STEPS.map((s,i)=>[`${i+1}단계`,i])].map(([l,v])=>`<button data-tmax="${v}" class="${(c.maxStep==null?-1:c.maxStep)===v?'on':''}">${l}${v>=0?'까지':''}</button>`).join('')}</div><small>잠긴 단계는 학생 화면에 🔒로 보이고 넘어갈 수 없어요. 이미 더 앞에 있는 모둠은 열어 둔 마지막 단계로 돌아와요. (선생님이 직접 이동시킨 모둠은 예외)</small></div>
   <div class="cp"><b>➡️ 단계 이동</b><div class="chips" id="cpGotoG"><button data-tgg="all" class="${tGotoSel.size?'':'on'}">모든 모둠</button>${groupIds().map(id=>`<button data-tgg="${id}" class="${tGotoSel.has(id)?'on':''}">${gLabel(id)}</button>`).join('')}</div><div class="row"><select id="cpGoto">${STEPS.map((s,i)=>`<option value="${i}" ${i===tGotoStep?'selected':''}>${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgoto>${tGotoSel.size?`고른 ${tGotoSel.size}개 모둠 이동`:'모두 이동'}</button></div><small>모둠을 고르면 그 모둠만, 안 고르면 모든 모둠 화면이 그 단계로 바로 바뀌어요.</small></div>
   <div class="cp"><b>👀 화면 집중</b><div class="row"><input type="text" id="cpMsg" placeholder="학생 화면에 띄울 말 (선택)"><button class="btn sm ${c.freeze?.on?'pri':''}" data-tfreeze>${c.freeze?.on?'▶️ 집중 끝내기':'⏸️ 모두 화면 멈추기'}</button></div><small>${c.freeze?.on?'🔴 지금 학생 화면이 멈춰 있어요.':'설명할 때 학생 화면에 "선생님을 봐 주세요"가 떠요.'}</small></div>
@@ -1923,6 +1923,7 @@ document.addEventListener('input',e=>{
   if(t.dataset.r){S.reflect[t.dataset.r]=t.value;save();upCard();return}
   if(t.dataset.mnote){S.missions=S.missions||{};S.missions[t.dataset.mnote]={...(S.missions[t.dataset.mnote]||{}),note:t.value};save();writeShared('m_'+t.dataset.mnote,t.value);return}
   if(t.dataset.cls){const c=S.classes.find(x=>x.id===t.dataset.cls);if(c){c[t.dataset.f]=t.value;save();upRules();if(t.dataset.f==='name'||t.dataset.f==='msg')writeShared((t.dataset.f==='name'?'cn_':'cm_')+c.id,t.value)}return}
+  if(t.id==='cpMsg'){if(T&&T.ctrl&&T.ctrl.freeze&&T.ctrl.freeze.on){clearTimeout(window._fzT);window._fzT=setTimeout(()=>cRef(T.code,'ctrl/freeze/msg').set(t.value.trim()),500)}return}
   if(t.id==='thr'){threshold=+t.value;$('#thrV').textContent=threshold+'%';mainRunner.reset();return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='joinCode')lookupClass();if(e.key==='Enter'&&e.target.id==='masterPw')masterCheck()});
