@@ -1552,10 +1552,10 @@ function tLog(id,act){try{cRef(T.code,'logs/'+id).push().set({ts:Date.now(),who:
 let ctrlDefT=null;function drawCtrl(){const p=$('#ctrlPanel');if(!p)return;const ae=document.activeElement;if(ae&&p.contains(ae)&&(ae.tagName==='INPUT'||ae.tagName==='SELECT'||ae.tagName==='TEXTAREA')){clearTimeout(ctrlDefT);ctrlDefT=setTimeout(drawCtrl,1200);return}const c=T.ctrl||{};const keepMsg=$('#cpMsg')?.value,keepLbl=$('#cpTLabel')?.value;
   p.innerHTML=`<div class="cp"><b>🔓 열어 둘 단계</b><div class="chips">${[['제한 없음',-1],...STEPS.map((s,i)=>[`${i+1}단계`,i])].map(([l,v])=>`<button data-tmax="${v}" class="${(c.maxStep==null?-1:c.maxStep)===v?'on':''}">${l}${v>=0?'까지':''}</button>`).join('')}</div><small>잠긴 단계는 학생 화면에 🔒로 보이고 넘어갈 수 없어요. 이미 더 앞에 있는 모둠은 열어 둔 마지막 단계로 돌아와요. (선생님이 직접 이동시킨 모둠은 예외)</small></div>
   <div class="cp"><b>➡️ 단계 이동</b><div class="chips" id="cpGotoG"><button data-tgg="all" class="${tGotoSel.size?'':'on'}">모든 모둠</button>${groupIds().map(id=>`<button data-tgg="${id}" class="${tGotoSel.has(id)?'on':''}">${gLabel(id)}</button>`).join('')}</div><div class="row"><select id="cpGoto">${STEPS.map((s,i)=>`<option value="${i}" ${i===tGotoStep?'selected':''}>${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgoto>${tGotoSel.size?`고른 ${tGotoSel.size}개 모둠 이동`:'모두 이동'}</button></div><small>모둠을 고르면 그 모둠만, 안 고르면 모든 모둠 화면이 그 단계로 바로 바뀌어요.</small></div>
-  <div class="cp"><b>👀 화면 집중</b><div class="row"><input type="text" id="cpMsg" placeholder="학생 화면에 띄울 말 (선택)"><button class="btn sm ${c.freeze?.on?'pri':''}" data-tfreeze>${c.freeze?.on?'▶️ 집중 끝내기':'⏸️ 모두 화면 멈추기'}</button></div><small>${c.freeze?.on?'🔴 지금 학생 화면이 멈춰 있어요.':'설명할 때 학생 화면에 "선생님을 봐 주세요"가 떠요.'}</small></div>
+  <div class="cp"><b>👀 화면 집중</b><div class="row"><input type="text" id="cpMsg" placeholder="학생 화면에 띄울 말 (선택)"><button class="btn sm ${c.freeze?.on?'pri':''}" data-tfreeze>${c.freeze?.on?'▶️ 집중 끝내기':'⏸️ 모두 화면 멈추기'}</button></div><small>${c.freeze?.on?'🔴 지금 학생 화면이 멈춰 있어요. '+(c.freeze.msg?'학생 화면 문구: “'+esc(c.freeze.msg)+'”':'(학생 화면 문구 없음)'):'설명할 때 학생 화면에 "선생님을 봐 주세요"가 떠요.'}</small></div>
   <div class="cp"><b>📷 실시간 화면 미리보기</b><label class="row" style="font-size:14px"><input type="checkbox" id="cpLiveCam" ${c.liveCam!==false?'checked':''}> 학생 카메라·소리 화면을 현황판에 보여 주기</label><small>끄면 학생 기기가 화면 이미지를 보내지 않아요. 단계·활동·기록은 그대로 보여요.</small></div>
   <div class="cp"><b>⏱️ 활동 타이머</b><div class="row"><input type="text" id="cpTLabel" placeholder="활동 이름 (예: AI 가르치기)">${[3,5,7,10,15].map(m=>`<button class="btn sm ghost" data-ttimer="${m}">${m}분</button>`).join('')}</div><small id="cpTLeft">${c.timer?.end?'':'학생 화면 왼쪽 아래에 남은 시간이 보여요.'}</small>${c.timer?.end?'<button class="btn sm ghost" data-ttimerstop>타이머 끄기</button>':''}</div>`;
-  if(keepMsg!=null)$('#cpMsg').value=keepMsg;else if(c.freeze?.msg)$('#cpMsg').value=c.freeze.msg;if(keepLbl!=null)$('#cpTLabel').value=keepLbl;
+  if(keepMsg!=null)$('#cpMsg').value=keepMsg;else if(window._fzMsg!=null)$('#cpMsg').value=window._fzMsg;else if(c.freeze?.msg)$('#cpMsg').value=c.freeze.msg;if(keepLbl!=null)$('#cpTLabel').value=keepLbl;
   clearInterval(tTick);if(c.timer?.end){const u=()=>{const e=$('#cpTLeft');if(!e)return clearInterval(tTick);const l=Math.round((c.timer.end-Date.now())/1000);e.innerHTML=l>0?`⏱️ <b>${c.timer.label?esc(c.timer.label)+' · ':''}${Math.floor(l/60)}:${String(l%60).padStart(2,'0')}</b> 남음`:'⏰ <b>시간 끝!</b>'};u();tTick=setInterval(u,1000)}}
 /* 결과 내보내기 */
 function exportRows(){const G=T.groups||6,ids=[];for(let g=1;g<=G;g++)ids.push('g'+g);Object.keys(T.teams).forEach(id=>{if(!ids.includes(id))ids.push(id)});
@@ -1892,7 +1892,7 @@ document.addEventListener('click',async e=>{
     if(!confirm(`${gLabel(id)}의 본부 기기를 '${name}' 기기로 바꿀까요?\n\n· 지금 본부 기기가 켜져 있으면 마지막 기록을 넘겨주고 연결이 멈춰요.\n· 지금 본부 기기가 꺼져 있으면 학급 서버에 마지막으로 백업된 기록으로 이어서 해요.\n· AI 학습 자료는 백업된 자료(종류마다 최대 40개)로 옮겨져요.`))return;
     await cRef(T.code,'teams/'+id+'/promoted').set({dev,from:cur,ts:Date.now()});await cRef(T.code,'teams/'+id+'/device').set(dev);
     if(((T.ctrl||{}).lockDev||{})[dev])cRef(T.code,'ctrl/lockDev/'+dev).set(null);tLog(id,`👑 '${name}' 기기를 본부로 바꿨어요`);toast(`'${name}' 기기가 새 본부가 돼요. 몇 초 걸려요.`);return}
-  if(t.hasAttribute('data-tfreeze')){const on=!(T.ctrl?.freeze?.on);cRef(T.code,'ctrl/freeze').set({on,msg:$('#cpMsg').value.trim()});return}
+  if(t.hasAttribute('data-tfreeze')){const on=!(T.ctrl?.freeze?.on);const el=$('#cpMsg'),msg=((el?el.value:window._fzMsg)||'').trim();window._fzMsg=msg;cRef(T.code,'ctrl/freeze').set({on,msg});return}
   if(t.dataset.ttimer){const m=+t.dataset.ttimer;cRef(T.code,'ctrl/timer').set({end:Date.now()+m*60000,label:$('#cpTLabel').value.trim()});toast(`${m}분 타이머를 시작했어요.`);return}
   if(t.hasAttribute('data-ttimerstop')){cRef(T.code,'ctrl/timer').remove();return}
   if(t.dataset.tprint){printCards(t.dataset.tprint);return}
@@ -1923,7 +1923,7 @@ document.addEventListener('input',e=>{
   if(t.dataset.r){S.reflect[t.dataset.r]=t.value;save();upCard();return}
   if(t.dataset.mnote){S.missions=S.missions||{};S.missions[t.dataset.mnote]={...(S.missions[t.dataset.mnote]||{}),note:t.value};save();writeShared('m_'+t.dataset.mnote,t.value);return}
   if(t.dataset.cls){const c=S.classes.find(x=>x.id===t.dataset.cls);if(c){c[t.dataset.f]=t.value;save();upRules();if(t.dataset.f==='name'||t.dataset.f==='msg')writeShared((t.dataset.f==='name'?'cn_':'cm_')+c.id,t.value)}return}
-  if(t.id==='cpMsg'){if(T&&T.ctrl&&T.ctrl.freeze&&T.ctrl.freeze.on){clearTimeout(window._fzT);window._fzT=setTimeout(()=>cRef(T.code,'ctrl/freeze/msg').set(t.value.trim()),500)}return}
+  if(t.id==='cpMsg'){window._fzMsg=t.value;if(T&&T.ctrl&&T.ctrl.freeze&&T.ctrl.freeze.on){clearTimeout(window._fzT);window._fzT=setTimeout(()=>cRef(T.code,'ctrl/freeze/msg').set(t.value.trim()),500)}return}
   if(t.id==='thr'){threshold=+t.value;$('#thrV').textContent=threshold+'%';mainRunner.reset();return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='joinCode')lookupClass();if(e.key==='Enter'&&e.target.id==='masterPw')masterCheck()});
