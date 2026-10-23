@@ -301,6 +301,9 @@ body.present .nblinks{display:none}
 .hhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
 .htabs{display:flex;gap:8px;margin:4px 0 16px}.htabs button{border:2px solid var(--ink);background:var(--paper);border-radius:999px;padding:8px 16px;font-weight:800;cursor:pointer}.htabs button.on{background:var(--ink);color:#fff}
 .hgroup{border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:12px;background:#fff}.hgroup h3{margin:0 0 4px;font-size:20px}
+.hidea{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}.hidea>div{flex:1;min-width:0}.hidea .x{flex:none;width:36px;height:36px;margin-top:4px;border:2px solid var(--line);background:#fff;border-radius:10px;font-weight:800;cursor:pointer}
+.hcls{display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,1.6fr);gap:8px;align-items:start;margin-bottom:8px}.hcls .emo{font-size:26px;text-align:center;padding-top:4px}
+@media(max-width:560px){.hcls{grid-template-columns:36px minmax(0,1fr)}.hcls>div:last-child{grid-column:2}}
 .typing{display:block;font-size:12.5px;color:#a259ff;font-weight:700;min-height:16px;margin-top:3px}.typing .by{color:var(--sub);font-weight:400}
 .col .mine{font-size:13px;color:#16786d;font-weight:700;align-self:center}
 
@@ -697,11 +700,11 @@ function ideaClick(t){
   if(t.dataset.ideaadd){const [tool,path,label]=t.dataset.ideaadd.split('|'),I=ideaP(),val=String(ideaGet(path)).trim();
     if(!val){toast('먼저 아이디어를 써 주세요!');return true}
     if(I.ideas.length>=8){toast('아이디어는 8개까지 담을 수 있어요. 안 쓸 것은 ✕로 지워 주세요.');return true}
-    I.ideas.push({id:uid(),text:val,src:label,s:{a:0,b:0,c:0}});if(!I.used.includes(tool))I.used.push(tool);ideaSet(path,'');save();
+    const nid=uid(),nx={id:nid,text:val,src:label,s:{a:0,b:0,c:0},ord:Date.now()};I.ideas.push(nx);writeShared('ix_'+nid,val,{src:label,ord:nx.ord},true);if(!I.used.includes(tool))I.used.push(tool);ideaSet(path,'');save();
     logAct(`💡 아이디어를 담았어요 (${label})`);toast('💡 아이디어를 담았어요!');drawIdeaTop();drawIdeaList();return true}
   if(t.dataset.irate){const [id,k,n]=t.dataset.irate.split('|'),x=ideaP().ideas.find(y=>y.id===id);if(x){x.s=x.s||{};x.s[k]=x.s[k]===+n?+n-1:+n;save();drawIdeaList()}return true}
   if(t.dataset.ipick){const I=ideaP();I.pick=I.pick===t.dataset.ipick?null:t.dataset.ipick;save();drawIdeaList();return true}
-  if(t.dataset.idel){const I=ideaP();I.ideas=I.ideas.filter(x=>x.id!==t.dataset.idel);if(I.pick===t.dataset.idel)I.pick=null;save();drawIdeaList();return true}
+  if(t.dataset.idel){const I=ideaP();I.ideas=I.ideas.filter(x=>x.id!==t.dataset.idel);if(I.pick===t.dataset.idel)I.pick=null;save();writeShared('ix_'+t.dataset.idel,'',{del:true},true);drawIdeaList();return true}
   if(t.hasAttribute('data-ideago')){const I=ideaP(),pk=I.ideas.find(x=>x.id===I.pick);if(!pk)return true;if(!S.oneline)S.oneline=pk.text;save();logAct(`👑 아이디어를 정했어요: ${pk.text}`);go(3);return true}
   return false}
 
@@ -1096,7 +1099,7 @@ function decodeRawEnc(enc){const out={};for(const id in enc){const e=enc[id],u=b
 async function flushBackup(){const code=S.classCode,id=S.teamId;if(!code||!id)return;try{await fbInit();await cRef(code,'backup/'+id+'/state').set(backupStateObj());
   if(knn&&!biasStash&&Object.keys(knn.getClassExampleCount()).length)await cRef(code,'backup/'+id+'/data').set({sense:sense(),model:sense()==='image'?MODEL_TAG:'',enc:encodeRaw(rawDataset())});await cRef(code,'backup/'+id+'/ts').set(TS())}catch(e){}}
 async function syncNow(){if(S.kicked||devGone)return;try{await fbInit();await cRef(S.classCode,'teams/'+S.teamId).set(progressData());pushSharedDiff()}catch(e){}}
-function pushSharedDiff(){if(HS||!shRef||!S.classCode)return;SHARED.forEach(([key])=>{const v=(key.startsWith('k_')?S[key.slice(2)]:(S.reflect||{})[key.slice(2)])||'';const cur=((SH.f||{})[key]||{}).v||'';if(v!==cur)cRef(S.classCode,'shared/'+S.teamId+'/f/'+key).set({v,by:DEVICE_ID,name:myName(),ts:Date.now()})})}
+function pushSharedDiff(){if(HS||!shRef||!S.classCode)return;localKeys().forEach(key=>{const v=localVal(key)||'';const o=(SH.f||{})[key]||{};if(o.del)return;if(v!==(o.v||''))cRef(S.classCode,'shared/'+S.teamId+'/f/'+key).set(Object.assign({v,by:DEVICE_ID,name:myName(),ts:Date.now()},extraFor(key)))})}
 function makeCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function teamState(tm){if(!tm)return 'free';if(tm.device===DEVICE_ID)return 'mine';if(tm.device&&Date.now()-(tm.updatedAt||0)<ACTIVE_MS)return 'busy';return 'resume'}
@@ -1217,6 +1220,8 @@ startLive();
 const MAX_HELPERS=5; // 본부 1대 + 도우미 5대 = 모둠당 최대 6대
 const SHARED=[['k_place','📍 어디에서 불편한가요?','problem'],['k_who','🙋 누가 불편한가요?','problem'],['k_when','⏰ 언제 불편한가요?','problem'],['k_what','😣 무엇이, 왜 불편한가요?','problem'],
   ['k_name','💡 발명품 이름','design'],['k_oneline','📝 한 줄 소개','design'],['r_good','👍 AI가 잘 알아챈 때는?','reflect'],['r_wrong','⚠️ AI가 틀린다면 어떤 일이 생길까? 어떻게 대비할까?','reflect'],['r_better','🚀 더 좋게 만들려면?','reflect']];
+SHARED.push(['i_reason','💬 왜 이 아이디어를 골랐나요?','idea']);
+MISSIONS.forEach(m=>SHARED.push(['m_'+m.id,`${m.e} ${m.t} — ${m.q}`,'mission']));
 const SHARED_KEYS=new Set(SHARED.map(x=>x[0]));
 function activeHelpers(o){return Object.entries(o||{}).filter(([d,v])=>v&&Date.now()-(v.ts||0)<ACTIVE_MS).map(([d,v])=>({dev:d,name:v.name||'도우미'}))}
 function myName(){return HS?HS.name:((S.members||'').split(',')[0].trim()||'본부')}
@@ -1226,23 +1231,50 @@ function saveHS(){try{HS?localStorage.setItem(HSKEY,JSON.stringify(HS)):localSto
 let SH={f:{},t:{}},shRef=null,shCode=null,HQ_HELPERS={},hlRef=null;
 /* 함께 쓰기 : 칸마다 실시간 공유 + 누가 쓰는 중인지 */
 function sharedCtx(){return HS?{code:HS.code,team:HS.teamId}:(S.classCode&&S.teamId&&!S.kicked?{code:S.classCode,team:S.teamId}:null)}
-let shT={};function writeShared(key,v){const c=sharedCtx();if(!c||!FIREBASE_CONFIG)return;clearTimeout(shT[key]);shT[key]=setTimeout(()=>{fbInit().then(()=>{cRef(c.code,'shared/'+c.team+'/f/'+key).set({v,by:DEVICE_ID,name:myName(),ts:Date.now()});setTyping(key,true);logAct(`✏️ '${(SHARED.find(x=>x[0]===key)||[])[1]||key}' 칸을 썼어요`,'w'+key,60000)})},350)}
+let shT={};function writeShared(key,v,extra,now){const c=sharedCtx();if(!c||!FIREBASE_CONFIG)return;clearTimeout(shT[key]);shT[key]=setTimeout(()=>{fbInit().then(()=>{const o=Object.assign({v,by:DEVICE_ID,name:myName(),ts:Date.now()},extraFor(key),extra);cRef(c.code,'shared/'+c.team+'/f/'+key).set(o);if(!o.del){setTyping(key,true);logAct(`✏️ '${sharedLabel(key)}' 칸을 썼어요`,'w'+key,60000)}})},now?0:350)}
+const SHRE=/^(k|r|i|m|ix|cn|cm)_(.*)$/;
+function sharedLabel(key){const s=SHARED.find(x=>x[0]===key);if(s)return s[1];return key.startsWith('ix_')?'🗂️ 아이디어':key.startsWith('cn_')?'🤖 종류 이름':key.startsWith('cm_')?'🤖 반응 문구':key}
+function localVal(key){const m=SHRE.exec(key);if(!m)return '';const p=m[1],id=m[2];
+  if(p==='k')return S[id]||'';if(p==='r')return (S.reflect||{})[id]||'';if(p==='i')return (S.idea||{}).reason||'';
+  if(p==='m')return ((S.missions||{})[id]||{}).note||'';
+  if(p==='ix'){const x=((S.idea||{}).ideas||[]).find(y=>y.id===id);return x?x.text||'':''}
+  const c=(S.classes||[]).find(y=>y.id===id);return c?((p==='cn'?c.name:c.msg)||''):''}
+function localKeys(){const ks=SHARED.map(x=>x[0]);((S.idea||{}).ideas||[]).forEach(x=>ks.push('ix_'+x.id));(S.classes||[]).forEach(c=>ks.push('cn_'+c.id,'cm_'+c.id));return ks}
+function extraFor(key){if(!key.startsWith('ix_'))return null;const id=key.slice(3),cur=(SH.f||{})[key]||{};let src=cur.src,ord=cur.ord;
+  if(!HS){const L=((S.idea||{}).ideas||[]),x=L.find(y=>y.id===id);if(x){if(src==null)src=x.src||'';if(!ord){x.ord=x.ord||Date.now()+L.indexOf(x);ord=x.ord}}}
+  return{src:src||'',ord:ord||Date.now()}}
+function helperIdeas(){return Object.entries((SH&&SH.f)||{}).filter(([k,o])=>k.startsWith('ix_')&&o&&!o.del).map(([k,o])=>({id:k.slice(3),text:o.v||'',src:o.src||'',ord:o.ord||0})).sort((a,b)=>a.ord-b.ord)}
+function dynKeysHelper(){const ks=helperIdeas().map(x=>'ix_'+x.id);((HT&&HT.classes)||[]).forEach(c=>ks.push('cn_'+c.id,'cm_'+c.id));return ks}
+function hVal(key){const o=(SH.f||{})[key];if(o&&!o.del)return o.v==null?'':o.v;if(key.startsWith('cn_')){const c=((HT&&HT.classes)||[]).find(y=>y.id===key.slice(3));return c?c.name||'':''}return ''}
+function helperWriteSig(){return helperIdeas().map(x=>x.id).join(',')+'|'+((HT&&HT.classes)||[]).map(c=>c.id).join(',')}
+function helperRefreshVals(){const b=$('#hBody');if(!b)return;b.querySelectorAll('[data-hs]').forEach(el=>{const o=(SH.f||{})[el.dataset.hs];if(o&&!o.del&&o.by!==DEVICE_ID&&document.activeElement!==el&&el.value!==o.v)el.value=o.v})}
 let tyT={};function setTyping(key,on){const c=sharedCtx();if(!c||!FIREBASE_CONFIG||!fb)return;const r=cRef(c.code,'shared/'+c.team+'/t/'+key+'/'+DEVICE_ID);clearTimeout(tyT[key]);
   if(on){r.set({name:myName(),ts:Date.now()});tyT[key]=setTimeout(()=>r.remove(),8000)}else r.remove()}
-function sharedKeyOf(el){if(!el||!el.dataset)return null;if(el.dataset.hs)return el.dataset.hs;if(el.dataset.k&&SHARED_KEYS.has('k_'+el.dataset.k))return 'k_'+el.dataset.k;if(el.dataset.r&&SHARED_KEYS.has('r_'+el.dataset.r))return 'r_'+el.dataset.r;return null}
-function inputFor(key){return HS?$(`[data-hs="${key}"]`):key.startsWith('k_')?$(`[data-k="${key.slice(2)}"]`):$(`[data-r="${key.slice(2)}"]`)}
+function sharedKeyOf(el){if(!el||!el.dataset)return null;const d=el.dataset;if(d.hs)return d.hs;if(d.k&&SHARED_KEYS.has('k_'+d.k))return 'k_'+d.k;if(d.r&&SHARED_KEYS.has('r_'+d.r))return 'r_'+d.r;if(d.idea==='reason')return 'i_reason';if(d.mnote)return 'm_'+d.mnote;if(d.itext)return 'ix_'+d.itext;if(d.cls&&(d.f==='name'||d.f==='msg'))return (d.f==='name'?'cn_':'cm_')+d.cls;return null}
+function inputFor(key){if(HS)return $(`[data-hs="${key}"]`);const m=SHRE.exec(key);if(!m)return null;const p=m[1],id=m[2];
+  if(p==='k')return $(`[data-k="${id}"]`);if(p==='r')return $(`[data-r="${id}"]`);if(p==='i')return $('[data-idea="reason"]');if(p==='m')return $(`[data-mnote="${id}"]`);
+  if(p==='ix')return $(`[data-itext="${id}"]`);return $(`[data-cls="${id}"][data-f="${p==='cn'?'name':'msg'}"]`)}
 async function listenShared(){const c=sharedCtx();if(!c||!FIREBASE_CONFIG)return;if(shRef&&shCode===c.code+c.team)return;try{await fbInit();if(shRef)shRef.off();shCode=c.code+c.team;shRef=cRef(c.code,'shared/'+c.team);
   let first=true;shRef.on('value',s=>{SH=s.val()||{};SH.f=SH.f||{};SH.t=SH.t||{};
-    if(!HS){for(const [key,o] of Object.entries(SH.f)){if(!o||o.by===DEVICE_ID)continue;applyShared(key,o.v,o.ts)}
-      if(first){first=false;SHARED.forEach(([key])=>{if(!SH.f[key]){const v=key.startsWith('k_')?S[key.slice(2)]:(S.reflect||{})[key.slice(2)];if(v)cRef(c.code,'shared/'+c.team+'/f/'+key).set({v,by:DEVICE_ID,name:myName(),ts:Date.now()})}})}}
-    else SHARED.forEach(([key])=>{const el=inputFor(key),o=SH.f[key];if(el&&o&&o.by!==DEVICE_ID&&document.activeElement!==el&&el.value!==o.v)el.value=o.v});
+    if(!HS){for(const [key,o] of Object.entries(SH.f)){if(!o||o.by===DEVICE_ID)continue;applyShared(key,o.v,o.ts,o)}
+      if(first){first=false;localKeys().forEach(key=>{if(!SH.f[key]){const v=localVal(key);if(v)cRef(c.code,'shared/'+c.team+'/f/'+key).set(Object.assign({v,by:DEVICE_ID,name:myName(),ts:Date.now()},extraFor(key)))}})}}
+    else if((HS.tab||'cap')==='write')drawHelperBody(true);
     decorateShared()})}catch(e){}}
 let shApplied={};
-function applyShared(key,v,ts){if(shApplied[key]&&shApplied[key]>=ts)return;shApplied[key]=ts;const f=key.slice(2);
-  if(key.startsWith('k_')){if(S[f]===v)return;S[f]=v;if(['place','who','when','what'].includes(f)){S.problem='';const p=$('#probAuto');if(p)p.textContent=problemAuto()}if(f==='name'){recompose();upRules()}}
-  else{S.reflect=S.reflect||{};if(S.reflect[f]===v)return;S.reflect[f]=v}
+function deferDraw(fn,sel){const run=()=>{const b=$(sel);if(!b)return;if(b.contains(document.activeElement)){setTimeout(run,1200);return}fn()};run()}
+function applyShared(key,v,ts,o){if(shApplied[key]&&shApplied[key]>=ts)return;shApplied[key]=ts;
+  const m=SHRE.exec(key);if(!m)return;const p=m[1],f=m[2];
+  if(p==='k'){if(S[f]===v)return;S[f]=v;if(['place','who','when','what'].includes(f)){S.problem='';const pp=$('#probAuto');if(pp)pp.textContent=problemAuto()}if(f==='name'){recompose();upRules()}}
+  else if(p==='r'){S.reflect=S.reflect||{};if(S.reflect[f]===v)return;S.reflect[f]=v}
+  else if(p==='i'){const I=ideaP();if((I.reason||'')===v)return;I.reason=v}
+  else if(p==='m'){S.missions=S.missions||{};const cur=S.missions[f]||{};if((cur.note||'')===v)return;S.missions[f]={...cur,note:v}}
+  else if(p==='ix'){const I=ideaP(),i=I.ideas.findIndex(y=>y.id===f);
+    if(o&&o.del){if(i<0)return;I.ideas.splice(i,1);if(I.pick===f)I.pick=null;save();if(S.step===2)deferDraw(drawIdeaList,'#ideaList');return}
+    if(i<0){if(I.ideas.length>=8)return;I.ideas.push({id:f,text:v,src:(o&&o.src)||'🤝 도우미',s:{a:0,b:0,c:0},ord:(o&&o.ord)||Date.now()});save();if(S.step===2)deferDraw(drawIdeaList,'#ideaList');return}
+    if(I.ideas[i].text===v)return;I.ideas[i].text=v}
+  else{const c=(S.classes||[]).find(y=>y.id===f);if(!c)return;const fld=p==='cn'?'name':'msg';if((c[fld]||'')===v)return;c[fld]=v;upRules()}
   const el=inputFor(key);if(el&&document.activeElement!==el)el.value=v;if(S.step===6)upCard();save()}
-function decorateShared(){SHARED.forEach(([key])=>{const el=inputFor(key);if(!el)return;let tag=el.parentElement.querySelector(`.typing[data-tk="${key}"]`);
+function decorateShared(){(HS?SHARED.concat(dynKeysHelper().map(k=>[k])):SHARED).forEach(([key])=>{const el=inputFor(key);if(!el)return;let tag=el.parentElement.querySelector(`.typing[data-tk="${key}"]`);
   if(!tag){tag=document.createElement('span');tag.className='typing';tag.dataset.tk=key;el.insertAdjacentElement('afterend',tag)}
   const who=Object.entries((SH.t||{})[key]||{}).filter(([d,o])=>d!==DEVICE_ID&&o&&Date.now()-(o.ts||0)<9000).map(([d,o])=>o.name);
   const last=(SH.f||{})[key];tag.innerHTML=who.length?`✍️ ${who.map(esc).join(', ')} 쓰는 중…`:(last&&last.by!==DEVICE_ID&&FIREBASE_CONFIG&&(HS||S.classCode)?`<span class="by">마지막으로 ${esc(last.name||'')}이(가) 썼어요</span>`:'')})}
@@ -1263,7 +1295,7 @@ async function processInbox(){if(inboxBusy||!inboxPending||!Object.keys(inboxPen
 async function listenHelpers(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||HS)return;if(hlRef)return;try{await fbInit();hlRef=cRef(S.classCode,'helpers/'+S.teamId);hlRef.on('value',s=>{HQ_HELPERS=s.val()||{};renderStepper();const hn=$('#helperNote');if(hn){const hl=activeHelpers(HQ_HELPERS);hn.innerHTML=hl.length?`🤝 도우미 기기(${hl.map(x=>esc(x.name)).join(', ')})에서 보낸 자료도 여기에 바로 더해져요.`:''}})}catch(e){}}
 function stopHQShared(){[shRef,inboxRef,hlRef].forEach(r=>r&&r.off());shRef=inboxRef=hlRef=null;shCode=inboxCode=null;HQ_HELPERS={};SH={f:{},t:{}}}
 /* 도우미 기기 */
-let HT=null,htRef=null,hMeta=null,hBeat=null,hHoldT=null,hcapBusy=false,hMediaS=null;
+let hDefT=null,HT=null,htRef=null,hMeta=null,hBeat=null,hHoldT=null,hcapBusy=false,hMediaS=null;
 async function joinHelper(){const g=E.sel,id='g'+g,name=($('#eMembers')?.value||'').trim();if(!name){toast('내 이름을 적어 주세요!');$('#eMembers').focus();return}
   try{await fbInit();const hs=(await cRef(E.code,'helpers/'+id).get()).val()||{};if(activeHelpers(hs).filter(x=>x.dev!==DEVICE_ID).length>=MAX_HELPERS){toast('도우미 자리가 꽉 찼어요.');return}
     HS={code:E.code,className:E.meta.name,kind:E.meta.kind||'class',teamId:id,group:g,name,tab:'cap',sent:{}};saveHS();await helperBeat();logAct('🤝 도우미로 들어왔어요');
@@ -1296,11 +1328,24 @@ function hListen(){if(!HS)return;fbInit().then(()=>{
   if(!hMeta){hMeta=cRef(HS.code,'meta');hMeta.on('value',s=>{if(!s.exists())leaveHelper('선생님이 학급을 삭제했어요.')})}
   listenShared();if(!ctrlRef){ctrlRef=cRef(HS.code,'ctrl');ctrlRef.on('value',s=>{CTRL=s.val()||{};applyCtrl()})}clearInterval(hBeat);hBeat=setInterval(helperBeat,45000)})}
 function drawHelperInfo(){const e=$('#hInfo');if(!e)return;if(!HT){e.textContent='본부 기기가 아직 없어요. 모둠 친구가 본부로 입장하면 자동으로 연결돼요.';return}
-  const st=STEPS[HT.step]||STEPS[0];e.innerHTML=`본부: <b>${esc(HT.emoji||'💡')} ${esc(HT.name||'이름 없는 발명품')}</b> · ${SN(HT.sense).e} ${SN(HT.sense).t} · 본부는 지금 <b>${(HT.step||0)+1}단계 ${st.e} ${st.t}</b>`}
+  const st=STEPS[HT.step]||STEPS[0];e.innerHTML=`본부: <b>${esc(HT.emoji||'💡')} ${esc(HT.name||'이름 없는 발명품')}</b> · ${SN(HT.sense).e} ${SN(HT.sense).t} · 본부는 지금 <b>${(HT.step||0)+1}단계 ${st.e} ${st.t}</b>`;const pk=$('#hPick');if(pk)pk.innerHTML=HT.ideaPick?`👑 본부가 고른 아이디어: <b>${esc(HT.ideaPick)}</b>`:''}
 function drawHelperBody(full){const b=$('#hBody');if(!b||!HS)return;const tab=HS.tab||'cap';
-  if(tab==='write'){if(!full&&b.dataset.tab==='write')return;b.dataset.tab='write';stopMedia();
-    const grp={problem:'🔍 문제 찾기',design:'📐 발명품',reflect:'🪪 돌아보기'};
-    b.innerHTML=`<p class="hint">여기 쓴 내용은 본부 화면과 실시간으로 함께 바뀌어요. 다른 친구가 쓰는 중이면 ✍️ 표시가 떠요.</p>`+Object.entries(grp).map(([g,t])=>`<div class="hgroup"><h3>${t}</h3>${SHARED.filter(x=>x[2]===g).map(([key,label])=>`<label class="f" for="hs_${key}">${label}</label>${g==='reflect'?`<textarea id="hs_${key}" data-hs="${key}">${esc((SH.f[key]||{}).v||'')}</textarea>`:`<input type="text" id="hs_${key}" data-hs="${key}" value="${esc((SH.f[key]||{}).v||'')}">`}`).join('')}</div>`).join('');
+  if(tab==='write'){if(!full&&b.dataset.tab==='write')return;
+    const sig=helperWriteSig();
+    if(b.dataset.tab==='write'){
+      if(b.dataset.sig===sig){helperRefreshVals();decorateShared();return}
+      if(b.contains(document.activeElement)){clearTimeout(hDefT);hDefT=setTimeout(()=>drawHelperBody(true),1500);return}}
+    const keepAdd=b.dataset.tab==='write'&&$('#hAddIdea')?$('#hAddIdea').value:'';
+    b.dataset.tab='write';b.dataset.sig=sig;stopMedia();
+    const grp={problem:'🔍 문제 찾기',idea:'💡 아이디어 내기',design:'📐 AI 설계',mission:'⚙️ 작동 시험',reflect:'🪪 돌아보기'};
+    const big=g=>g==='reflect'||g==='mission'||g==='idea';
+    const field=([key,label,g])=>`<label class="f" for="hs_${key}">${label}</label>${big(g)?`<textarea id="hs_${key}" data-hs="${key}">${esc(hVal(key))}</textarea>`:`<input type="text" id="hs_${key}" data-hs="${key}" value="${esc(hVal(key))}">`}`;
+    const ideaBlock=()=>{const L=helperIdeas();return `<label class="f" style="margin-top:0">🗂️ 우리 아이디어 모음 <small style="color:var(--sub);font-weight:400">(최대 8개)</small></label><div class="hint" id="hPick">${HT&&HT.ideaPick?`👑 본부가 고른 아이디어: <b>${esc(HT.ideaPick)}</b>`:''}</div>`+
+      (L.length?L.map(x=>`<div class="hidea"><div><input type="text" data-hs="ix_${x.id}" value="${esc(hVal('ix_'+x.id))}"><small class="hint">${esc(x.src)}</small></div><button class="x" data-hdelidea="${x.id}" title="지우기">✕</button></div>`).join(''):'<div class="empty" style="padding:12px">아직 담은 아이디어가 없어요.</div>')+
+      (L.length>=8?'<div class="hint">아이디어는 8개까지 담을 수 있어요. 안 쓸 것은 ✕로 지워 주세요.</div>':'<div class="hidea"><div><input type="text" id="hAddIdea" placeholder="새 아이디어를 써 보세요"></div><button class="btn sm pri" data-haddidea>＋ 담기</button></div>')};
+    const clsBlock=()=>{const cs=(HT&&HT.classes)||[];if(!cs.length)return '';return `<label class="f">🤖 AI가 구별할 종류와 반응 <small style="color:var(--sub);font-weight:400">(알아챌 것 이름과 반응 문구를 같이 고쳐요)</small></label>`+cs.map(c=>`<div class="hcls"><span class="emo">${esc(c.emoji||'')}</span><div><input type="text" data-hs="cn_${c.id}" value="${esc(hVal('cn_'+c.id))}" placeholder="알아챌 것"></div><div><input type="text" data-hs="cm_${c.id}" value="${esc(hVal('cm_'+c.id))}" placeholder="반응 문구 (비우면 조용히)"></div></div>`).join('')};
+    b.innerHTML=`<p class="hint">여기 쓴 내용은 본부 화면과 실시간으로 함께 바뀌어요. 다른 친구가 쓰는 중이면 ✍️ 표시가 떠요.</p>`+Object.entries(grp).map(([g,t])=>`<div class="hgroup"><h3>${t}</h3>${g==='idea'?ideaBlock():''}${SHARED.filter(x=>x[2]===g).map(field).join('')}${g==='design'?clsBlock():''}</div>`).join('');
+    const ai=$('#hAddIdea');if(ai&&keepAdd)ai.value=keepAdd;
     decorateShared();return}
   b.dataset.tab='cap';const s=HT&&HT.sense;
   if(!HT||!(HT.classes||[]).length){b.innerHTML='<div class="empty">본부에서 4단계 AI 설계를 마치면 자료를 보낼 수 있어요.</div>';return}
@@ -1457,7 +1502,7 @@ let tTick=null,liveOpen=null;
 function groupIds(){const G=T.groups||6,ids=[];for(let g=1;g<=G;g++)ids.push('g'+g);Object.keys(T.teams||{}).forEach(id=>{if(!ids.includes(id))ids.push(id)});return ids}
 function gLabel(id){const t=(T.teams||{})[id];return t&&t.group?`${t.group}모둠`:(t&&t.team)||id.replace('g','')+'모둠'}
 function logsOf(id){return Object.values((T.logs||{})[id]||{}).filter(Boolean).sort((a,b)=>b.ts-a.ts)}
-function typingOf(id){const tt=((T.shared||{})[id]||{}).t||{},out=[];for(const [key,devs] of Object.entries(tt))for(const o of Object.values(devs||{}))if(o&&Date.now()-(o.ts||0)<9000)out.push(`${o.name}: '${((SHARED.find(x=>x[0]===key)||[])[1]||'').replace(/^\S+\s/,'')}'`);return out}
+function typingOf(id){const tt=((T.shared||{})[id]||{}).t||{},out=[];for(const [key,devs] of Object.entries(tt))for(const o of Object.values(devs||{}))if(o&&Date.now()-(o.ts||0)<9000)out.push(`${o.name}: '${sharedLabel(key).replace(/^\S+\s/,'')}'`);return out}
 function tLocked(id){const c=T.ctrl||{},t=(T.teams||{})[id]||{};return !!((c.lockTeam||{})[id]||(t.device&&(c.lockDev||{})[t.device])||Object.keys((T.helpers||{})[id]||{}).some(d=>(c.lockDev||{})[d]))}
 function drawLive(){const box=$('#liveGrid');if(!box)return;
   box.innerHTML=groupIds().map(id=>{const t=(T.teams||{})[id],L=(T.live||{})[id],hl=activeHelpers((T.helpers||{})[id]);
@@ -1797,6 +1842,8 @@ document.addEventListener('click',async e=>{
   if(t.dataset.tdonereq){cRef(T.code,'requests/'+t.dataset.tdonereq).remove();return}
   if(t.hasAttribute('data-join')){joinClass();return}
   if(t.hasAttribute('data-joinhelper')){joinHelper();return}
+  if(t.hasAttribute('data-haddidea')){const inp=$('#hAddIdea'),val=inp?inp.value.trim():'';if(!val){toast('먼저 아이디어를 써 주세요!');return}if(helperIdeas().length>=8){toast('아이디어는 8개까지 담을 수 있어요.');return}if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();inp.value='';writeShared('ix_'+uid(),val,{src:'🤝 도우미',ord:Date.now()},true);logAct('💡 아이디어를 담았어요 (도우미)');toast('💡 아이디어를 담았어요!');return}
+  if(t.dataset.hdelidea){if(!confirm('이 아이디어를 지울까요?'))return;if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();writeShared('ix_'+t.dataset.hdelidea,'',{del:true},true);return}
   if(t.dataset.htab){HS.tab=t.dataset.htab;saveHS();renderHelper();liveTick();return}
   if(t.hasAttribute('data-hleave')){if(!confirm('도우미를 그만할까요?'))return;leaveHelper();return}
   if(t.hasAttribute('data-kickok')){offAll(stuRefs);stopCtrl();stopHQShared();if(myCardRef){myCardRef.off();myCardRef=null}if(aiRef){aiRef.off();aiRef=null}const o=$('#kicked');if(o)o.remove();
@@ -1868,14 +1915,14 @@ document.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.k&&SHARED_KEYS.has('k_'+t.dataset.k))writeShared('k_'+t.dataset.k,t.value);
   if(t.dataset.r&&SHARED_KEYS.has('r_'+t.dataset.r))writeShared('r_'+t.dataset.r,t.value);
-  if(t.dataset.idea!=null){ideaSet(t.dataset.idea,t.value);save();return}
-  if(t.dataset.itext){const x=ideaP().ideas.find(y=>y.id===t.dataset.itext);if(x){x.text=t.value;save()}return}
+  if(t.dataset.idea!=null){ideaSet(t.dataset.idea,t.value);save();if(t.dataset.idea==='reason')writeShared('i_reason',t.value);return}
+  if(t.dataset.itext){const x=ideaP().ideas.find(y=>y.id===t.dataset.itext);if(x){x.text=t.value;save();writeShared('ix_'+x.id,t.value)}return}
   if(t.dataset.hs){writeShared(t.dataset.hs,t.value);return}
   if(t.dataset.k){S[t.dataset.k]=t.value;if(t.dataset.k==='nick'){S.team=teamLabel();renderStepper()}save();if(['place','who','when','what'].includes(t.dataset.k))upProb();if(t.dataset.k==='team')renderStepper();if(['name','team','nick'].includes(t.dataset.k))recompose();if(['name','oneline','place'].includes(t.dataset.k)&&!aiP().edited){const p=$('#aiPrompt');if(p)p.value=buildPrompt()}if(S.step===6)upCard();if(S.step===3)upRules();return}
   if(t.dataset.ai){const a=aiP();if(t.dataset.ai==='prompt'){a.prompt=t.value;a.edited=true}else{a[t.dataset.ai]=t.value;if(!a.edited){const p=$('#aiPrompt');if(p)p.value=buildPrompt()}}save();return}
   if(t.dataset.r){S.reflect[t.dataset.r]=t.value;save();upCard();return}
-  if(t.dataset.mnote){S.missions=S.missions||{};S.missions[t.dataset.mnote]={...(S.missions[t.dataset.mnote]||{}),note:t.value};save();return}
-  if(t.dataset.cls){const c=S.classes.find(x=>x.id===t.dataset.cls);if(c){c[t.dataset.f]=t.value;save();upRules()}return}
+  if(t.dataset.mnote){S.missions=S.missions||{};S.missions[t.dataset.mnote]={...(S.missions[t.dataset.mnote]||{}),note:t.value};save();writeShared('m_'+t.dataset.mnote,t.value);return}
+  if(t.dataset.cls){const c=S.classes.find(x=>x.id===t.dataset.cls);if(c){c[t.dataset.f]=t.value;save();upRules();if(t.dataset.f==='name'||t.dataset.f==='msg')writeShared((t.dataset.f==='name'?'cn_':'cm_')+c.id,t.value)}return}
   if(t.id==='thr'){threshold=+t.value;$('#thrV').textContent=threshold+'%';mainRunner.reset();return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='joinCode')lookupClass();if(e.key==='Enter'&&e.target.id==='masterPw')masterCheck()});
