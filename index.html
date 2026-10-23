@@ -1093,11 +1093,11 @@ let syncT,bkT,devGone=false;function syncProgress(){if(!FIREBASE_CONFIG||!S.clas
 function backupStateObj(){const o=JSON.parse(JSON.stringify(S));['kicked','gotoSeen','gotoTSeen','solo','classCode','className','kind','teamId','group','dataSaved'].forEach(k=>delete o[k]);return o}
 async function backupState(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked||devGone)return;try{await fbInit();await cRef(S.classCode,'backup/'+S.teamId+'/state').set(backupStateObj());await cRef(S.classCode,'backup/'+S.teamId+'/ts').set(TS())}catch(e){}}
 let bkdT;function backupData(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked||devGone||!knn||biasStash)return;clearTimeout(bkdT);bkdT=setTimeout(async()=>{try{await fbInit();
-  await cRef(S.classCode,'backup/'+S.teamId+'/data').set({sense:sense(),model:sense()==='image'?MODEL_TAG:'',enc:encodeRaw(rawDataset())})}catch(e){}},1500)}
+  await cRef(S.classCode,'backup/'+S.teamId+'/data').set({sense:sense(),model:tagOf(sense()),enc:encodeRaw(rawDataset())})}catch(e){}},1500)}
 function decodeRawEnc(enc){const out={};for(const id in enc){const e=enc[id],u=b64dec(e.b64),f=new Float32Array(e.n*e.d);
   for(let r=0;r<e.n;r++){const mn=e.mins[r],sc=(e.maxs[r]-mn)||1;for(let j=0;j<e.d;j++)f[r*e.d+j]=mn+u[r*e.d+j]/255*sc}out[id]={shape:[e.n,e.d],data:f}}return out}
 async function flushBackup(){const code=S.classCode,id=S.teamId;if(!code||!id)return;try{await fbInit();await cRef(code,'backup/'+id+'/state').set(backupStateObj());
-  if(knn&&!biasStash&&Object.keys(knn.getClassExampleCount()).length)await cRef(code,'backup/'+id+'/data').set({sense:sense(),model:sense()==='image'?MODEL_TAG:'',enc:encodeRaw(rawDataset())});await cRef(code,'backup/'+id+'/ts').set(TS())}catch(e){}}
+  if(knn&&!biasStash&&Object.keys(knn.getClassExampleCount()).length)await cRef(code,'backup/'+id+'/data').set({sense:sense(),model:tagOf(sense()),enc:encodeRaw(rawDataset())});await cRef(code,'backup/'+id+'/ts').set(TS())}catch(e){}}
 async function syncNow(){if(S.kicked||devGone)return;try{await fbInit();await cRef(S.classCode,'teams/'+S.teamId).set(progressData());pushSharedDiff()}catch(e){}}
 function pushSharedDiff(){if(HS||!shRef||!S.classCode)return;localKeys().forEach(key=>{const v=localVal(key)||'';const o=(SH.f||{})[key]||{};if(o.del)return;if(v!==(o.v||''))cRef(S.classCode,'shared/'+S.teamId+'/f/'+key).set(Object.assign({v,by:DEVICE_ID,name:myName(),ts:Date.now()},extraFor(key)))})}
 function makeCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
@@ -1134,9 +1134,9 @@ function encodeRaw(raw){const out={};for(const id in raw){const [n,d]=raw[id].sh
   out[id]={n:rows.length,d,mins,maxs,b64:b64enc(u)}}return out}
 function decodeEnc(enc){const obj={};for(const id in enc){const e=enc[id],u=b64dec(e.b64),f=new Float32Array(e.n*e.d);
   for(let r=0;r<e.n;r++){const mn=e.mins[r],sc=(e.maxs[r]-mn)||1;for(let j=0;j<e.d;j++)f[r*e.d+j]=mn+u[r*e.d+j]/255*sc}obj[id]=tf.tensor2d(f,[e.n,e.d])}return obj}
-async function shareModel(){try{let raw=null;if(knn&&!biasStash)raw=rawDataset();else{const r=await savedRaw();if(r&&r.sense===sense()&&(r.sense!=='image'||r.model===MODEL_TAG))raw=r.data}
+async function shareModel(){try{let raw=null;if(knn&&!biasStash)raw=rawDataset();else{const r=await savedRaw();if(r&&r.sense===sense()&&(r.model||'')===tagOf(r.sense))raw=r.data}
   if(!raw||!S.classes.every(c=>raw[c.id]&&raw[c.id].shape[0]>0))return false;
-  await cRef(S.classCode,'models/'+S.teamId).set({sense:sense(),name:S.name||'',emoji:S.emoji||'💡',team:S.team||'',classes:S.classes.map(c=>({id:c.id,emoji:c.emoji,name:c.name,msg:c.msg||'',sound:c.sound||'none'})),data:encodeRaw(raw),ts:TS()});return true}catch(e){return false}}
+  await cRef(S.classCode,'models/'+S.teamId).set({sense:sense(),tag:tagOf(sense()),name:S.name||'',emoji:S.emoji||'💡',team:S.team||'',classes:S.classes.map(c=>({id:c.id,emoji:c.emoji,name:c.name,msg:c.msg||'',sound:c.sound||'none'})),data:encodeRaw(raw),ts:TS()});return true}catch(e){return false}}
 let tryKnn=null,tryModel=null,tryRunner=null,tryId=null,tryCode=null,tryVotes={ok:0,ng:0};
 async function openTry(id){const code=mode==='teacher'?T.code:mode==='view'?V.code:S.classCode;if(!code)return;
   try{await fbInit();toast('친구 모둠의 AI를 불러오는 중…');const m=(await cRef(code,'models/'+id).get()).val();if(!m||!m.data){toast('아직 체험할 수 있는 AI가 없어요.');return}
@@ -1153,7 +1153,7 @@ async function openTry(id){const code=mode==='teacher'?T.code:mode==='view'?V.co
     await mountMedia(s);await ensureExtractor(s);await waitFor(()=>window.tf&&window.knnClassifier);
     if(tryKnn){try{tryKnn.dispose()}catch(e){}}tryKnn=knnClassifier.create();tryKnn.setClassifierDataset(decodeEnc(m.data));
     const st=$('#tryStatus');if(st)st.textContent=`🧠 준비 완료! ${SN(s).show}`;
-    tryRunner=makeRunner({knn:()=>tryKnn,sense:()=>s,trained:()=>true,classes:()=>tryModel.classes,p:'t',stage:'#tryStage',thr:()=>65,tts:()=>true});tryRunner.start();
+    tryRunner=makeRunner({knn:()=>tryKnn,sense:()=>s,trained:()=>true,classes:()=>tryModel.classes,legacy:()=>s==='pose'&&tryModel&&tryModel.tag!==POSE_TAG,p:'t',stage:'#tryStage',thr:()=>65,tts:()=>true});tryRunner.start();
   }catch(e){toast('체험을 시작하지 못했어요. 인터넷을 확인해 주세요.');closeTry()}}
 function closeTry(){if(tryRunner)tryRunner.stop();tryRunner=null;if(tryKnn){try{tryKnn.dispose()}catch(e){}tryKnn=null}if(mode!=='student'||!(S.step===4||S.step===5))stopMedia();
   document.querySelectorAll('.overlay.try').forEach(o=>o.remove());video.style.display='none';document.body.appendChild(video);if(mode==='student'&&(S.step===4||S.step===5))render()}
@@ -1287,7 +1287,7 @@ async function processInbox(){if(inboxBusy||!inboxPending||!Object.keys(inboxPen
   if(biasStash){setTimeout(processInbox,2000);return}
   if(!isReady()){loadModel();setTimeout(processInbox,1500);return}
   inboxBusy=true;const items=Object.entries(inboxPending);inboxPending=null;const done={};let n=0;const by=new Set();
-  for(const [k,it] of items){done[k]=null;if(!it||it.sense!==sense()||(it.sense==='image'&&it.model!==MODEL_TAG)||!S.classes.some(c=>c.id===it.cls))continue;
+  for(const [k,it] of items){done[k]=null;if(!it||it.sense!==sense()||((it.model||'')!==tagOf(it.sense))||!S.classes.some(c=>c.id===it.cls))continue;
     try{const raw=decodeRawEnc({x:it.enc}).x;const t=tf.tensor(raw.data);knn.addExample(t,it.cls);t.dispose();if(it.thumb)pushThumb(it.cls,it.thumb);n++;by.add(it.by||'도우미')}catch(e){}}
   try{await inboxRef.update(done)}catch(e){}inboxBusy=false;
   if(n){saveDataset();renderCollect();toast(`🤝 ${[...by].join(', ')}이(가) 보낸 자료 ${n}개를 받았어요`)}
@@ -1365,7 +1365,7 @@ function drawHelperCounts(){const box=$('#hCollect');if(!box||!HT)return;const s
     <div class="bar"><i style="width:${Math.min(100,n/30*100)}%;background:${colorOf(i)}"></i></div>
     <div class="acts"><button class="btn sm hold" style="background:${colorOf(i)};border-color:${colorOf(i)};color:#fff" data-hhold="${esc(c.id)}" ${ok?'':'disabled'}>${SN(s).hold}</button><span class="mine">내가 보낸 ${mine}${SN(s).unit}</span></div></div>`}).join('')}
 async function helperCapture(cid){if(hcapBusy||!HS||!HT)return;hcapBusy=true;const s=HT.sense;try{const f=await extract(s);if(!f)return;const arr=f.dataSync().slice();f.dispose();
-  const enc=encodeRaw({x:{shape:[1,arr.length],data:arr}}).x;await cRef(HS.code,'inbox/'+HS.teamId).push().set({cls:cid,enc,thumb:makeThumb(s),by:HS.name,dev:DEVICE_ID,sense:s,model:s==='image'?MODEL_TAG:'',ts:Date.now()});
+  const enc=encodeRaw({x:{shape:[1,arr.length],data:arr}}).x;await cRef(HS.code,'inbox/'+HS.teamId).push().set({cls:cid,enc,thumb:makeThumb(s),by:HS.name,dev:DEVICE_ID,sense:s,model:tagOf(s),ts:Date.now()});
   HS.sent=HS.sent||{};HS.sent[cid]=(HS.sent[cid]||0)+1;saveHS()}catch(e){}finally{hcapBusy=false}}
 function startHelperHold(cid,btn){if(!HT||!ready[HT.sense]||!mediaOn(HT.sense))return;hHoldCid=cid;hHoldStart=(HS.sent||{})[cid]||0;btn.classList.add('rec');const tick=async()=>{await helperCapture(cid);if(hHoldT)btn.textContent=`📤 보내는 중… ${(HS.sent||{})[cid]||0}${SN(HT.sense).unit}`};tick();hHoldT=setInterval(tick,SN(HT.sense).iv+60)}
 let hHoldCid=null,hHoldStart=0;
@@ -1612,6 +1612,8 @@ async function tOpen(){
 }
 
 /* ---------- AI 엔진 : 보는 AI · 자세를 보는 AI · 듣는 AI ---------- */
+const POSE_TAG='pose-v2'; // 자세 특징 계산 방식 버전 (바뀌면 예전 자세 자료는 다시 모아요)
+function tagOf(s){return s==='image'?MODEL_TAG:s==='pose'?POSE_TAG:''}
 const MODEL_TAG='mnv2-050'; // 보는 AI 모델 버전 (바뀌면 예전 학습 자료는 다시 모아요)
 const SENSES={
   image:{e:'👀',t:'보는 AI',d:'카메라로 물건이나 모습을 구별해요',noun:'사진',unit:'장',media:'cam',verb:'보면',hold:'📸 꾹 눌러서 찍기',iv:120,show:'카메라에 비춰 보세요'},
@@ -1694,11 +1696,21 @@ function soundFeat(){if(specFrames.length<12)return null;const fr=specFrames.sli
 /* 자세를 보는 AI : 관절 17곳 */
 const EDGES=[[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16],[0,5],[0,6],[0,1],[0,2],[1,3],[2,4]];
 let lastPose=null;
-async function poseFeat(){let kp=null;try{const ps=await poseDet.estimatePoses(video);kp=ps&&ps[0]&&ps[0].keypoints||null}catch(e){}
-  lastPose=kp;drawPose(kp);const out=new Float32Array(36);out[1]=0.3;if(!kp)return out;
+function poseVecOld(kp){const out=new Float32Array(36);out[1]=0.3;if(!kp)return out;
   const good=kp.filter(k=>k.score>0.3);if(good.length<5)return out;
   const cx=good.reduce((a,k)=>a+k.x,0)/good.length,cy=good.reduce((a,k)=>a+k.y,0)/good.length;let sc=0;good.forEach(k=>sc=Math.max(sc,Math.hypot(k.x-cx,k.y-cy)));sc=sc||1;
   out[0]=1;kp.forEach((k,i)=>{if(k.score>0.3){out[2+i*2]=(k.x-cx)/sc;out[3+i*2]=(k.y-cy)/sc}});return out}
+/* 새 방식: 어깨 가운데를 기준점으로, 어깨 너비를 눈금으로 삼아 카메라 거리·위치와 상관없이 자세만 비교.
+   잘 안 보이는 관절은 확신도에 따라 서서히 0으로 줄이고, 다리 쪽(자주 가려짐)은 비중을 낮춰서 깜빡여도 값이 크게 튀지 않게 해요. */
+function poseVec(kp){const out=new Float32Array(36);out[1]=0.3;if(!kp)return out;
+  const ok=(i,t)=>kp[i]&&kp[i].score>(t||0.3);if(kp.filter(k=>k.score>0.3).length<5)return out;
+  let cx=0,cy=0,sc=0;
+  if(ok(5)&&ok(6)){cx=(kp[5].x+kp[6].x)/2;cy=(kp[5].y+kp[6].y)/2;sc=Math.hypot(kp[5].x-kp[6].x,kp[5].y-kp[6].y);
+}
+  if(!(sc>8)){const good=kp.filter(k=>k.score>0.3);cx=good.reduce((a,k)=>a+k.x,0)/good.length;cy=good.reduce((a,k)=>a+k.y,0)/good.length;sc=0;good.forEach(k=>sc=Math.max(sc,Math.hypot(k.x-cx,k.y-cy)));sc=sc||1}
+  out[0]=1;kp.forEach((k,i)=>{if(k.score>0.3){const w=Math.min(1,(k.score-0.3)/0.3)*(i>=11?0.3:1),cl=v=>Math.max(-5,Math.min(5,v));out[2+i*2]=cl((k.x-cx)/sc)*w;out[3+i*2]=cl((k.y-cy)/sc)*w}});return out}
+async function poseFeat(legacy){let kp=null;try{const ps=await poseDet.estimatePoses(video);kp=ps&&ps[0]&&ps[0].keypoints||null}catch(e){}
+  lastPose=kp;drawPose(kp);return legacy?poseVecOld(kp):poseVec(kp)}
 function drawPose(kp){const cv=$('#poseCv');if(!cv)return;const x=cv.getContext('2d');cv.width=video.videoWidth||640;cv.height=video.videoHeight||480;x.clearRect(0,0,cv.width,cv.height);if(!kp)return;
   x.lineWidth=5;x.lineCap='round';x.strokeStyle='#2bb3a3';EDGES.forEach(([a,b])=>{if(kp[a].score>0.3&&kp[b].score>0.3){x.beginPath();x.moveTo(kp[a].x,kp[a].y);x.lineTo(kp[b].x,kp[b].y);x.stroke()}});
   kp.forEach(k=>{if(k.score>0.3){x.fillStyle='#ffd166';x.beginPath();x.arc(k.x,k.y,6,0,7);x.fill()}})}
@@ -1708,9 +1720,9 @@ function poseThumb(x,kp,W,H){x.fillStyle='#14203c';x.fillRect(0,0,W,H);if(!kp)re
   x.strokeStyle='#2bb3a3';x.lineWidth=2.5;x.lineCap='round';EDGES.forEach(([a,b])=>{if(kp[a].score>0.3&&kp[b].score>0.3){const p=P(kp[a]),q=P(kp[b]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke()}});
   g.forEach(k=>{const p=P(k);x.fillStyle='#ffd166';x.beginPath();x.arc(p[0],p[1],2,0,7);x.fill()})}
 /* 공통 : 특징 뽑기 · 썸네일 */
-async function extract(s=sense()){
+async function extract(s=sense(),legacy){
   if(s==='image'){if(!net||video.readyState<2)return null;return tf.tidy(()=>net.infer(video,true))}
-  if(s==='pose'){if(!poseDet||video.readyState<2)return null;return tf.tensor(await poseFeat())}
+  if(s==='pose'){if(!poseDet||video.readyState<2)return null;return tf.tensor(await poseFeat(legacy))}
   if(s==='sound'){const f=soundFeat();return f?tf.tensor(f):null}return null}
 function makeThumb(s=sense()){const c=document.createElement('canvas');c.width=c.height=72;const x=c.getContext('2d');
   if(s==='sound'){x.fillStyle='#14203c';x.fillRect(0,0,72,72);const sp=$('#specCv');if(sp)x.drawImage(sp,sp.width-130,0,130,sp.height,0,0,72,72)}
@@ -1741,19 +1753,21 @@ async function idbSet(k,v){const d=await idb();return new Promise((res,rej)=>{co
 async function idbGet(k){const d=await idb();return new Promise((res,rej)=>{const r=d.transaction(IDB_STORE).objectStore(IDB_STORE).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 function rawDataset(){const ds=knn.getClassifierDataset(),out={};for(const k in ds){out[k]={shape:ds[k].shape,data:ds[k].dataSync().slice()}}return out}
 let dsT;function saveDataset(){clearTimeout(dsT);dsT=setTimeout(async()=>{if(!knn||biasStash)return;try{
-  const out=rawDataset();await idbSet('dataset',{sense:sense(),model:sense()==='image'?MODEL_TAG:'',data:out});await idbSet('thumbs',{...thumbs});S.dataSaved=Object.keys(out).length>0;save();backupData()}catch(e){}},800)}
+  const out=rawDataset();await idbSet('dataset',{sense:sense(),model:tagOf(sense()),data:out});await idbSet('thumbs',{...thumbs});S.dataSaved=Object.keys(out).length>0;save();backupData()}catch(e){}},800)}
 async function savedRaw(){try{const raw=await idbGet('dataset');if(!raw)return null;const data=raw.data&&raw.sense?raw.data:raw;return{sense:raw.sense||'image',model:raw.model||'',data}}catch(e){return null}}
-async function restoreDataset(){try{const r=await savedRaw();if(!r||r.sense!==sense()||(r.sense==='image'&&r.model!==MODEL_TAG))return 0;const ids=new Set(S.classes.map(c=>c.id)),obj={};let n=0;
+async function restoreDataset(){try{const r=await savedRaw();if(!r||r.sense!==sense()||((r.model||'')!==tagOf(r.sense)))return 0;const ids=new Set(S.classes.map(c=>c.id)),obj={};let n=0;
   for(const k in r.data){if(!ids.has(k))continue;obj[k]=tf.tensor2d(r.data[k].data,r.data[k].shape);n+=r.data[k].shape[0]}
   if(n)knn.setClassifierDataset(obj);const th=await idbGet('thumbs')||{};for(const k in th)if(ids.has(k))thumbs[k]=th[k];return n}catch(e){return 0}}
 function clearDataset(){S.dataSaved=false;try{idbSet('dataset',{});idbSet('thumbs',{})}catch(e){}}
 
 /* ---------- 실시간 판단 (본 시험 · 친구 발명품 체험 공용) ---------- */
 function makeRunner(o){let on=false,timer=null,lastShown=null,stable={id:null,n:0};
-  const R={last:null,lastFeat:null,start(){on=true;lastShown=null;stable={id:null,n:0};clearTimeout(timer);tick()},stop(){on=false;clearTimeout(timer)},reset(){lastShown=null}};
+  const R={last:null,lastFeat:null,buf:[],start(){on=true;lastShown=null;stable={id:null,n:0};R.buf=[];clearTimeout(timer);tick()},stop(){on=false;clearTimeout(timer)},reset(){lastShown=null}};
   async function tick(){if(!on)return;const k=o.knn(),s=o.sense();
-    if(k&&ready[s]&&mediaOn(s)&&o.trained()){let f=null;try{f=await extract(s);if(f&&on){const total=Object.values(k.getClassExampleCount()).reduce((a,b)=>a+b,0);
-      const r=await k.predictClass(f,Math.min(7,total));R.lastFeat=f.dataSync().slice();show(r)}}catch(e){}finally{if(f)f.dispose()}}
+    if(k&&ready[s]&&mediaOn(s)&&o.trained()){let f=null;try{f=await extract(s,o.legacy&&o.legacy());if(f&&on){
+        const cn=Object.values(k.getClassExampleCount()),total=cn.reduce((a,b)=>a+b,0);let kk=Math.min(7,total);
+        if(s==='pose'){const a=f.dataSync();R.buf.push(Float32Array.from(a));if(R.buf.length>3)R.buf.shift();if(R.buf.length>1){const m=new Float32Array(a.length);R.buf.forEach(v=>{for(let q=0;q<m.length;q++)m[q]+=v[q]/R.buf.length});f.dispose();f=tf.tensor(m)}kk=Math.max(1,Math.min(5,...cn))}
+        const r=await k.predictClass(f,kk);R.lastFeat=f.dataSync().slice();show(r)}}catch(e){}finally{if(f)f.dispose()}}
     if(on)timer=setTimeout(tick,s==='image'?120:150)}
   function show(r){const cls=o.classes();let best=null,bv=0;
     cls.forEach(c=>{const v=Math.round((r.confidences[c.id]||0)*100);const b=$('#'+o.p+'b_'+c.id),t=$('#'+o.p+'v_'+c.id);if(b)b.style.width=v+'%';if(t)t.textContent=v+'%';if(v>bv){bv=v;best=c}});
