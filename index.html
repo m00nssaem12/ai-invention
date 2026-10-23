@@ -526,7 +526,7 @@ function go(i,force){
   if(!force&&locked(i)&&i>S.step){toast(`🔒 선생님이 ${CTRL.maxStep+1}단계까지만 열어 두셨어요`);return}
   if(i===5&&!trainedReady()&&!(S.dataSaved&&!isReady())){toast('먼저 5단계에서 모든 종류의 사진을 모아 AI를 가르쳐 주세요!');i=4}
   if(i!==S.step)logAct(`${i+1}단계 ${STEPS[i].e} ${STEPS[i].t}(으)로 이동했어요`);
-  S.step=i;if(!S.visited.includes(i))S.visited.push(i);save();render();window.scrollTo({top:0,behavior:'smooth'});
+  S.forcedStep=force?i:null;S.step=i;if(!S.visited.includes(i))S.visited.push(i);save();render();window.scrollTo({top:0,behavior:'smooth'});
 }
 function nav(prev=true,next='다음 단계'){
   return `<div class="nav">${prev?`<button class="btn ghost" data-go="${S.step-1}">← 이전</button>`:'<span></span>'}${next?`<button class="btn pri" data-go="${S.step+1}">${next} →</button>`:''}</div>`;
@@ -1179,6 +1179,8 @@ function applyCtrl(){
   timerPill();
   if(mode==='student'&&!HS)[['gotoSeen',CTRL.goto],['gotoTSeen',S.teamId&&(CTRL.gotoT||{})[S.teamId]]].forEach(([k,g])=>{if(!g||!g.ts||g.ts===S[k])return;const fresh=S[k]!==undefined||Date.now()-g.ts<120000;S[k]=g.ts;save();
     if(fresh&&g.step!==S.step&&!needEntry()&&!S.kicked){toast(`👩‍🏫 선생님이 ${g.step+1}단계 '${STEPS[g.step].t}'(으)로 이동했어요`);go(g.step,true)}});
+  if(mode==='student'&&!HS&&S.classCode&&!S.kicked&&!needEntry()&&CTRL.maxStep!=null&&S.step>CTRL.maxStep&&S.forcedStep!==S.step){const m=CTRL.maxStep;
+    toast(`🔒 선생님이 ${m+1}단계까지만 열어 두셔서 ${m+1}단계로 돌아왔어요`);go(m,true);S.forcedStep=null;save()}
 }
 function timerPill(){clearInterval(pillT);let p=$('#tpill');const tm=CTRL.timer;
   if(mode!=='student'||!tm||!tm.end){if(p)p.remove();return}
@@ -1489,7 +1491,7 @@ function drawLiveDetail(){let o=$('#liveDetail');const id=liveOpen;if(!id){if(o)
 let tGotoSel=new Set(),tGotoStep=0;
 function tLog(id,act){try{cRef(T.code,'logs/'+id).push().set({ts:Date.now(),who:'선생님',role:'teacher',act})}catch(e){}}
 function drawCtrl(){const p=$('#ctrlPanel');if(!p)return;const c=T.ctrl||{};const keepMsg=$('#cpMsg')?.value,keepLbl=$('#cpTLabel')?.value;
-  p.innerHTML=`<div class="cp"><b>🔓 열어 둘 단계</b><div class="chips">${[['제한 없음',-1],...STEPS.map((s,i)=>[`${i+1}단계`,i])].map(([l,v])=>`<button data-tmax="${v}" class="${(c.maxStep==null?-1:c.maxStep)===v?'on':''}">${l}${v>=0?'까지':''}</button>`).join('')}</div><small>잠긴 단계는 학생 화면에 🔒로 보이고 넘어갈 수 없어요.</small></div>
+  p.innerHTML=`<div class="cp"><b>🔓 열어 둘 단계</b><div class="chips">${[['제한 없음',-1],...STEPS.map((s,i)=>[`${i+1}단계`,i])].map(([l,v])=>`<button data-tmax="${v}" class="${(c.maxStep==null?-1:c.maxStep)===v?'on':''}">${l}${v>=0?'까지':''}</button>`).join('')}</div><small>잠긴 단계는 학생 화면에 🔒로 보이고 넘어갈 수 없어요. 이미 더 앞에 있는 모둠은 열어 둔 마지막 단계로 돌아와요. (선생님이 직접 이동시킨 모둠은 예외)</small></div>
   <div class="cp"><b>➡️ 단계 이동</b><div class="chips" id="cpGotoG"><button data-tgg="all" class="${tGotoSel.size?'':'on'}">모든 모둠</button>${groupIds().map(id=>`<button data-tgg="${id}" class="${tGotoSel.has(id)?'on':''}">${gLabel(id)}</button>`).join('')}</div><div class="row"><select id="cpGoto">${STEPS.map((s,i)=>`<option value="${i}" ${i===tGotoStep?'selected':''}>${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgoto>${tGotoSel.size?`고른 ${tGotoSel.size}개 모둠 이동`:'모두 이동'}</button></div><small>모둠을 고르면 그 모둠만, 안 고르면 모든 모둠 화면이 그 단계로 바로 바뀌어요.</small></div>
   <div class="cp"><b>👀 화면 집중</b><div class="row"><input type="text" id="cpMsg" placeholder="학생 화면에 띄울 말 (선택)"><button class="btn sm ${c.freeze?.on?'pri':''}" data-tfreeze>${c.freeze?.on?'▶️ 집중 끝내기':'⏸️ 모두 화면 멈추기'}</button></div><small>${c.freeze?.on?'🔴 지금 학생 화면이 멈춰 있어요.':'설명할 때 학생 화면에 "선생님을 봐 주세요"가 떠요.'}</small></div>
   <div class="cp"><b>📷 실시간 화면 미리보기</b><label class="row" style="font-size:14px"><input type="checkbox" id="cpLiveCam" ${c.liveCam!==false?'checked':''}> 학생 카메라·소리 화면을 현황판에 보여 주기</label><small>끄면 학생 기기가 화면 이미지를 보내지 않아요. 단계·활동·기록은 그대로 보여요.</small></div>
@@ -1814,7 +1816,7 @@ document.addEventListener('click',async e=>{
   if(t.dataset.tkind){tKindSel=t.dataset.tkind;document.querySelectorAll('#tKindPick button').forEach(b=>b.classList.toggle('on',b===t));const hn=$('#tKindHint');if(hn)hn.textContent=tKindSel==='training'?'⚡ 예시 발명품으로 30분 만에 전 과정을 체험하는 코스가 켜지고, 단계마다 "우리 반에 적용할 때" 팁이 보여요.':'학생들이 문제 찾기부터 차근차근 진행해요.';return}
   if(t.dataset.tgsel){tGrpSel=+t.dataset.tgsel;document.querySelectorAll('#tGrpPick button').forEach(b=>b.classList.toggle('on',b===t));return}
   if(t.dataset.tgrp){const v=Math.max(1,Math.min(20,(T.groups||6)+(+t.dataset.tgrp)));cRef(T.code,'groups').set(v);return}
-  if(t.dataset.tmax!=null){const v=+t.dataset.tmax;cRef(T.code,'ctrl/maxStep').set(v<0?null:v);return}
+  if(t.dataset.tmax!=null){const v=+t.dataset.tmax;cRef(T.code,'ctrl/maxStep').set(v<0?null:v);if(v>=0){const over=Object.entries(T.teams||{}).filter(([id,x])=>x&&x.step>v).map(([id])=>gLabel(id));if(over.length)toast(`${over.join(', ')}이 더 앞 단계에 있어서 ${v+1}단계로 돌아가요.`)}return}
   if(t.dataset.tgg){const id=t.dataset.tgg;if(id==='all')tGotoSel.clear();else tGotoSel.has(id)?tGotoSel.delete(id):tGotoSel.add(id);tGotoStep=+($('#cpGoto')?.value||0);drawCtrl();return}
   if(t.hasAttribute('data-tgoto')){const v=+$('#cpGoto').value,ts=Date.now();
     if(tGotoSel.size){const up={},ids=[...tGotoSel];ids.forEach(id=>{up['gotoT/'+id]={step:v,ts}});cRef(T.code,'ctrl').update(up);ids.forEach(id=>tLog(id,`➡️ ${v+1}단계로 이동시켰어요`));toast(`${ids.map(gLabel).join(', ')}을 ${v+1}단계로 이동시켰어요.`);tGotoSel.clear();drawCtrl()}
