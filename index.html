@@ -182,6 +182,11 @@ body.present .lab{grid-template-columns:1.1fr 1fr;align-items:stretch}
 body.present .stage{min-height:56vh}body.present .stage .big{font-size:150px}body.present .stage .say{font-size:46px}body.present .stage .who{font-size:18px}
 body.present .conf .r{font-size:17px;grid-template-columns:150px 1fr 56px}body.present .conf .r .b{height:20px}
 /* 수업 제어 (학생) */
+.devs{margin:12px 0;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff}.devs h3{margin:0 0 8px}
+.dv{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:8px 0;border-top:1px dashed var(--line)}.dv:first-of-type{border-top:none}
+.dv small{color:var(--sub);margin-left:4px}.dv em{font-style:normal;font-weight:800;color:#b33b20;margin-left:6px;font-size:13px}.dva{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.dva select{width:auto}
+.dv.grp{background:var(--soft);margin:6px -12px -10px;padding:10px 12px;border-radius:0 0 12px 12px;border-top:2px solid var(--line)}
+.live .lock{margin-left:auto;font-size:15px}
 #freeze{position:fixed;inset:0;z-index:90;background:rgba(31,42,68,.94);color:#fff;display:grid;place-items:center;text-align:center;padding:20px}
 #freeze .big{font-size:110px}#freeze h2{font-size:44px;margin:10px 0}#freeze p{font-size:24px;max-width:700px}
 #tpill{position:fixed;bottom:16px;left:16px;z-index:80;background:var(--ink);color:#fff;border-radius:999px;padding:8px 16px;font-weight:800;font-size:16px;box-shadow:var(--shadow)}
@@ -1079,19 +1084,24 @@ function progressData(){const counts=knn?knn.getClassExampleCount():{};const t=S
   return{group:S.group||null,nick:S.nick||'',team:S.team||'(이름 없음)',members:S.members||'',step:S.step,name:S.name||'',emoji:S.emoji||'💡',problem:S.problem||problemAuto(),
     classes:S.classes.map(c=>({id:c.id,emoji:c.emoji,name:c.name,count:counts[c.id]||0})),
     total:Object.values(counts).reduce((a,b)=>a+b,0)||S.lastTotal||0,acc:t?Math.round(S.test.ok/t*100):null,tests:t,published:!!S.cardId,device:DEVICE_ID,sense:sense(),confuse:topConfusion(),missions:missionsSummary(),missionDone:missionDone(),ideaN:ideaSummary().n,ideaTools:ideaSummary().tools,ideaPick:ideaSummary().pick,roundsTxt:roundsText(),updatedAt:TS()}}
-let syncT,bkT;function syncProgress(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked)return;clearTimeout(syncT);syncT=setTimeout(syncNow,1500);clearTimeout(bkT);bkT=setTimeout(backupState,6000)}
+let syncT,bkT,devGone=false;function syncProgress(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked||devGone)return;clearTimeout(syncT);syncT=setTimeout(syncNow,1500);clearTimeout(bkT);bkT=setTimeout(backupState,6000)}
 /* 기기를 바꿔도 이어 할 수 있게 모둠 기록을 학급 서버에 백업 */
-function backupStateObj(){const o=JSON.parse(JSON.stringify(S));['kicked','gotoSeen','solo','classCode','className','kind','teamId','group','dataSaved'].forEach(k=>delete o[k]);return o}
-async function backupState(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked)return;try{await fbInit();await cRef(S.classCode,'backup/'+S.teamId+'/state').set(backupStateObj());await cRef(S.classCode,'backup/'+S.teamId+'/ts').set(TS())}catch(e){}}
-let bkdT;function backupData(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked||!knn||biasStash)return;clearTimeout(bkdT);bkdT=setTimeout(async()=>{try{await fbInit();
+function backupStateObj(){const o=JSON.parse(JSON.stringify(S));['kicked','gotoSeen','gotoTSeen','solo','classCode','className','kind','teamId','group','dataSaved'].forEach(k=>delete o[k]);return o}
+async function backupState(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked||devGone)return;try{await fbInit();await cRef(S.classCode,'backup/'+S.teamId+'/state').set(backupStateObj());await cRef(S.classCode,'backup/'+S.teamId+'/ts').set(TS())}catch(e){}}
+let bkdT;function backupData(){if(!FIREBASE_CONFIG||!S.classCode||!S.teamId||S.kicked||devGone||!knn||biasStash)return;clearTimeout(bkdT);bkdT=setTimeout(async()=>{try{await fbInit();
   await cRef(S.classCode,'backup/'+S.teamId+'/data').set({sense:sense(),model:sense()==='image'?MODEL_TAG:'',enc:encodeRaw(rawDataset())})}catch(e){}},1500)}
 function decodeRawEnc(enc){const out={};for(const id in enc){const e=enc[id],u=b64dec(e.b64),f=new Float32Array(e.n*e.d);
   for(let r=0;r<e.n;r++){const mn=e.mins[r],sc=(e.maxs[r]-mn)||1;for(let j=0;j<e.d;j++)f[r*e.d+j]=mn+u[r*e.d+j]/255*sc}out[id]={shape:[e.n,e.d],data:f}}return out}
-async function syncNow(){if(S.kicked)return;try{await fbInit();await cRef(S.classCode,'teams/'+S.teamId).set(progressData());pushSharedDiff()}catch(e){}}
+async function flushBackup(){const code=S.classCode,id=S.teamId;if(!code||!id)return;try{await fbInit();await cRef(code,'backup/'+id+'/state').set(backupStateObj());
+  if(knn&&!biasStash&&Object.keys(knn.getClassExampleCount()).length)await cRef(code,'backup/'+id+'/data').set({sense:sense(),model:sense()==='image'?MODEL_TAG:'',enc:encodeRaw(rawDataset())});await cRef(code,'backup/'+id+'/ts').set(TS())}catch(e){}}
+async function syncNow(){if(S.kicked||devGone)return;try{await fbInit();await cRef(S.classCode,'teams/'+S.teamId).set(progressData());pushSharedDiff()}catch(e){}}
 function pushSharedDiff(){if(HS||!shRef||!S.classCode)return;SHARED.forEach(([key])=>{const v=(key.startsWith('k_')?S[key.slice(2)]:(S.reflect||{})[key.slice(2)])||'';const cur=((SH.f||{})[key]||{}).v||'';if(v!==cur)cRef(S.classCode,'shared/'+S.teamId+'/f/'+key).set({v,by:DEVICE_ID,name:myName(),ts:Date.now()})})}
 function makeCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.floor(Math.random()*A.length)];return s}
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function teamState(tm){if(!tm)return 'free';if(tm.device===DEVICE_ID)return 'mine';if(tm.device&&Date.now()-(tm.updatedAt||0)<ACTIVE_MS)return 'busy';return 'resume'}
+async function applyBackup(bk){S=migrateSteps(Object.assign(fresh(),{ver:1},bk.state));clearDataset();
+  if(bk.data&&bk.data.enc){const raw=decodeRawEnc(bk.data.enc);try{await idbSet('dataset',{sense:bk.data.sense,model:bk.data.model||'',data:raw});
+    const th={};for(const k in raw)if((S.savedThumbs||{})[k])th[k]=[S.savedThumbs[k]];await idbSet('thumbs',th);S.dataSaved=true}catch(e){}}}
 async function joinClass(){
   if(!E.meta||!E.sel){toast('우리 모둠 번호를 눌러 주세요!');return}
   const g=E.sel,id='g'+g;
@@ -1103,12 +1113,10 @@ async function joinClass(){
     if(bk&&bk.state&&!confirm(`${g}모둠이 하던 기록이 학급 서버에 있어요.\n이 기기로 불러와서 이어서 할까요?\n(이 기기에 있던 다른 발명 기록은 바뀌어요)`))return}
   if(S.teamId&&S.teamId!==id){S.cardId=null;S.cardStatus='';if(myCardRef){myCardRef.off();myCardRef=null}if(aiRef){aiRef.off();aiRef=null}}
   const nick=($('#eNick')?.value||'').trim(),members=($('#eMembers')?.value||'').trim();
-  if(bk&&bk.state){resetKnn();endBias();S=migrateSteps(Object.assign(fresh(),{ver:1},bk.state));clearDataset();
-    if(bk.data&&bk.data.enc){const raw=decodeRawEnc(bk.data.enc);try{await idbSet('dataset',{sense:bk.data.sense,model:bk.data.model||'',data:raw});
-      const th={};for(const k in raw)if((S.savedThumbs||{})[k])th[k]=[S.savedThumbs[k]];await idbSet('thumbs',th);S.dataSaved=true}catch(e){}}}
+  if(bk&&bk.state){resetKnn();endBias();await applyBackup(bk)}
   else{S.step=0;if(!S.visited.includes(0))S.visited.push(0)}
   if(nick)S.nick=nick;if(members)S.members=members;
-  S.classCode=E.code;S.className=E.meta.name;S.kind=E.meta.kind||'class';S.group=g;S.teamId=id;S.team=teamLabel();S.solo=false;S.kicked=false;
+  S.classCode=E.code;S.className=E.meta.name;S.kind=E.meta.kind||'class';S.group=g;S.teamId=id;S.team=teamLabel();S.solo=false;S.kicked=false;devGone=false;
   save();await syncNow();logAct(bk&&bk.state?'💻 다른 기기에서 기록을 불러와 본부로 이어서 시작했어요':'💻 본부로 입장했어요');toast(bk&&bk.state?`${g}모둠 기록을 불러왔어요! ${S.step+1}단계부터 이어서 해요.`:`${E.meta.name} ${g}모둠으로 들어왔어요! 🎉`);history.replaceState(null,'',location.pathname);render();
   if(S.dataSaved&&S.step<4)loadModel();
 }
@@ -1152,23 +1160,25 @@ function tryVote(v){if(!tryRunner||!tryRunner.last){toast('먼저 AI에게 보�
 let CTRL={},ctrlRef=null,pillT=null;
 let devRef=null,metaWatch=null,claimSeen=false;
 async function listenCtrl(){if(!FIREBASE_CONFIG||!S.classCode||ctrlRef||mode!=='student'||S.kicked)return;try{await fbInit();ctrlRef=cRef(S.classCode,'ctrl');ctrlRef.on('value',s=>{CTRL=s.val()||{};applyCtrl()});
-  claimSeen=false;devRef=cRef(S.classCode,'teams/'+S.teamId+'/device');devRef.on('value',s=>{const v=s.val();if(v===DEVICE_ID){claimSeen=true;return}if(v||claimSeen){const code=S.classCode;setTimeout(async()=>{let alive=true;try{alive=(await cRef(code,'meta').get()).exists()}catch(e){}kick(!alive?'deleted':v?'other':'released')},400)}});
+  claimSeen=false;devRef=cRef(S.classCode,'teams/'+S.teamId+'/device');devRef.on('value',s=>{const v=s.val();if(v===DEVICE_ID){claimSeen=true;return}if(v||claimSeen){devGone=true;clearTimeout(syncT);clearTimeout(bkT);clearTimeout(bkdT);const code=S.classCode,id=S.teamId;setTimeout(async()=>{let alive=true,pr=null;try{alive=(await cRef(code,'meta').get()).exists();pr=(await cRef(code,'teams/'+id+'/promoted').get()).val()}catch(e){}
+    const sw=alive&&v&&pr&&pr.dev===v;if(sw)await flushBackup();kick(!alive?'deleted':sw?'swapped':v?'other':'released')},400)}});
   metaWatch=cRef(S.classCode,'meta');metaWatch.on('value',s=>{if(!s.exists())kick('deleted')})}catch(e){}}
 function kick(why){if(S.kicked||!S.classCode)return;S.kicked=true;save();clearTimeout(syncT);clearTimeout(bkT);
-  const msg={other:['📱','이 모둠은 다른 기기로 옮겨졌어요','같은 모둠이 두 기기에서 동시에 쓰면 기록이 섞여서, 이 기기는 연결을 멈췄어요.'],released:['🔓','선생님이 이 기기의 연결을 풀었어요','다시 들어가려면 처음 화면에서 모둠을 다시 골라 주세요. 기록은 학급 서버에 남아 있어요.'],deleted:['🗑️','선생님이 학급을 삭제했어요','이 기기에 있는 발명 기록은 그대로 남아 있어요.']}[why];
+  const msg={other:['📱','이 모둠은 다른 기기로 옮겨졌어요','같은 모둠이 두 기기에서 동시에 쓰면 기록이 섞여서, 이 기기는 연결을 멈췄어요.'],released:['🔓','선생님이 이 기기의 연결을 풀었어요','다시 들어가려면 처음 화면에서 모둠을 다시 골라 주세요. 기록은 학급 서버에 남아 있어요.'],deleted:['🗑️','선생님이 학급을 삭제했어요','이 기기에 있는 발명 기록은 그대로 남아 있어요.'],swapped:['🔁','선생님이 본부 기기를 바꿨어요','지금까지의 기록은 새 본부 기기로 옮겨졌어요. 도우미로 함께하려면 처음 화면에서 모둠을 다시 골라 주세요.']}[why];
   let o=$('#kicked');if(!o){o=document.createElement('div');o.id='kicked';document.body.appendChild(o)}
   o.innerHTML=`<div class="kbox"><div class="big">${msg[0]}</div><h2>${msg[1]}</h2><p>${msg[2]}</p><button class="btn pri" data-kickok>처음 화면으로</button></div>`}
 function stopCtrl(){if(ctrlRef){ctrlRef.off();ctrlRef=null}if(devRef){devRef.off();devRef=null}if(metaWatch){metaWatch.off();metaWatch=null}CTRL={};applyCtrl()}
 function locked(i){return mode==='student'&&S.classCode&&CTRL.maxStep!=null&&i>CTRL.maxStep}
 function applyCtrl(){
   if(mode==='student'&&!needEntry()&&!HS)renderStepper();
-  let fz=$('#freeze');
-  if(mode==='student'&&CTRL.freeze&&CTRL.freeze.on){if(!fz){fz=document.createElement('div');fz.id='freeze';document.body.appendChild(fz)}
-    fz.innerHTML=`<div><div class="big">👀</div><h2>선생님을 봐 주세요!</h2>${CTRL.freeze.msg?`<p>${esc(CTRL.freeze.msg)}</p>`:''}</div>`;try{speechSynthesis.cancel()}catch(e){}}
-  else if(fz)fz.remove();
+  let fz=$('#freeze');const myT=HS?HS.teamId:S.teamId,lk=(CTRL.lockDev||{})[DEVICE_ID]||(myT&&(CTRL.lockTeam||{})[myT]);
+  if(mode==='student'&&(lk||(CTRL.freeze&&CTRL.freeze.on))){if(!fz){fz=document.createElement('div');fz.id='freeze';document.body.appendChild(fz)}
+    fz.innerHTML=lk?`<div><div class="big">🔒</div><h2>선생님이 이 기기를 잠갔어요</h2><p>선생님이 잠금을 풀면 하던 화면으로 돌아와요.</p></div>`:`<div><div class="big">👀</div><h2>선생님을 봐 주세요!</h2>${CTRL.freeze.msg?`<p>${esc(CTRL.freeze.msg)}</p>`:''}</div>`;try{speechSynthesis.cancel()}catch(e){}
+    if(lk){endHold();endHelperHold();mainRunner.stop()}}
+  else if(fz){fz.remove();if(mode==='student'&&!HS&&S.step===5&&!needEntry())mainRunner.start()}
   timerPill();
-  const g=CTRL.goto;if(mode==='student'&&!HS&&g&&g.ts&&g.ts!==S.gotoSeen){const fresh=S.gotoSeen!==undefined||Date.now()-g.ts<120000;S.gotoSeen=g.ts;save();
-    if(fresh&&g.step!==S.step&&!needEntry()){toast(`👩‍🏫 선생님이 ${g.step+1}단계 '${STEPS[g.step].t}'(으)로 이동했어요`);go(g.step,true)}}
+  if(mode==='student'&&!HS)[['gotoSeen',CTRL.goto],['gotoTSeen',S.teamId&&(CTRL.gotoT||{})[S.teamId]]].forEach(([k,g])=>{if(!g||!g.ts||g.ts===S[k])return;const fresh=S[k]!==undefined||Date.now()-g.ts<120000;S[k]=g.ts;save();
+    if(fresh&&g.step!==S.step&&!needEntry()&&!S.kicked){toast(`👩‍🏫 선생님이 ${g.step+1}단계 '${STEPS[g.step].t}'(으)로 이동했어요`);go(g.step,true)}});
 }
 function timerPill(){clearInterval(pillT);let p=$('#tpill');const tm=CTRL.timer;
   if(mode!=='student'||!tm||!tm.end){if(p)p.remove();return}
@@ -1255,6 +1265,18 @@ async function joinHelper(){const g=E.sel,id='g'+g,name=($('#eMembers')?.value||
   try{await fbInit();const hs=(await cRef(E.code,'helpers/'+id).get()).val()||{};if(activeHelpers(hs).filter(x=>x.dev!==DEVICE_ID).length>=MAX_HELPERS){toast('도우미 자리가 꽉 찼어요.');return}
     HS={code:E.code,className:E.meta.name,kind:E.meta.kind||'class',teamId:id,group:g,name,tab:'cap',sent:{}};saveHS();await helperBeat();logAct('🤝 도우미로 들어왔어요');
     history.replaceState(null,'',location.pathname);toast(`${g}모둠 도우미로 함께해요! 🤝`);render()}catch(e){toast('연결하지 못했어요. 인터넷을 확인해 주세요.')}}
+let promoting=false;
+async function becomeHQ(){promoting=true;const h=HS;endHelperHold();clearInterval(hBeat);[htRef,hMeta,shRef].forEach(r=>r&&r.off());htRef=hMeta=shRef=null;shCode=null;HT=null;hMediaS=null;stopMedia();stopCtrl();
+  try{await cRef(h.code,'helpers/'+h.teamId+'/'+DEVICE_ID).remove()}catch(e){}
+  HS=null;saveHS();$('#stepper').innerHTML='';$('#teamTag').textContent=`👑 ${h.group}모둠 본부`;
+  $('#main').innerHTML='<div class="empty"><div style="font-size:60px">👑</div><h2>선생님이 이 기기를 본부로 바꿨어요</h2><p>모둠 기록을 옮겨 오는 중이에요. 잠시만 기다려 주세요…</p></div>';
+  await new Promise(r=>setTimeout(r,3000));
+  try{const meta=(await cRef(h.code,'meta').get()).val();if(!meta)throw 0;const bk=(await cRef(h.code,'backup/'+h.teamId).get()).val();
+    resetKnn();endBias();if(bk&&bk.state)await applyBackup(bk);else{S=fresh();clearDataset()}
+    S.classCode=h.code;S.className=meta.name;S.kind=meta.kind||'class';S.group=h.group;S.teamId=h.teamId;S.team=teamLabel();S.solo=false;S.kicked=false;S.cardId=S.cardId||null;devGone=false;if(!S.members)S.members=h.name;
+    save();await syncNow();logAct('👑 선생님이 이 기기를 본부로 바꿨어요');toast(`${h.group}모둠 본부가 되었어요! ${S.step+1}단계부터 이어서 해요.`)}
+  catch(e){toast('본부로 바꾸지 못했어요. 처음 화면에서 모둠을 다시 골라 주세요.')}
+  promoting=false;render();if(S.dataSaved&&S.step<4)loadModel()}
 async function helperBeat(){if(mode==='view')return;if(!HS)return;try{await fbInit();liveTick()}catch(e){}}
 function leaveHelper(msg){if(HS&&!msg)logAct('🤝 도우미를 그만했어요');const h=HS;HS=null;saveHS();clearInterval(hBeat);[htRef,hMeta,shRef].forEach(r=>r&&r.off());htRef=hMeta=shRef=null;shCode=null;HT=null;hMediaS=null;stopMedia();stopCtrl();
   if(h&&fb)cRef(h.code,'helpers/'+h.teamId+'/'+DEVICE_ID).remove();E={code:'',meta:null,groups:0,teams:{},sel:null,loading:false};if(msg)toast(msg);render()}
@@ -1267,7 +1289,7 @@ function renderHelper(){
     <div id="hBody"></div>`;
   hListen();drawHelperBody(true)}
 function hListen(){if(!HS)return;fbInit().then(()=>{
-  if(!htRef){htRef=cRef(HS.code,'teams/'+HS.teamId);htRef.on('value',s=>{const prev=HT;HT=s.val();drawHelperInfo();if(!prev||!HT||prev.sense!==HT.sense||JSON.stringify((prev.classes||[]).map(c=>c.id+c.name))!==JSON.stringify((HT.classes||[]).map(c=>c.id+c.name)))drawHelperBody(true);else drawHelperCounts()})}
+  if(!htRef){htRef=cRef(HS.code,'teams/'+HS.teamId);htRef.on('value',s=>{const prev=HT;HT=s.val();if(HT&&HT.device===DEVICE_ID&&HS&&!promoting){becomeHQ();return}drawHelperInfo();if(!prev||!HT||prev.sense!==HT.sense||JSON.stringify((prev.classes||[]).map(c=>c.id+c.name))!==JSON.stringify((HT.classes||[]).map(c=>c.id+c.name)))drawHelperBody(true);else drawHelperCounts()})}
   if(!hMeta){hMeta=cRef(HS.code,'meta');hMeta.on('value',s=>{if(!s.exists())leaveHelper('선생님이 학급을 삭제했어요.')})}
   listenShared();if(!ctrlRef){ctrlRef=cRef(HS.code,'ctrl');ctrlRef.on('value',s=>{CTRL=s.val()||{};applyCtrl()})}clearInterval(hBeat);hBeat=setInterval(helperBeat,45000)})}
 function drawHelperInfo(){const e=$('#hInfo');if(!e)return;if(!HT){e.textContent='본부 기기가 아직 없어요. 모둠 친구가 본부로 입장하면 자동으로 연결돼요.';return}
@@ -1429,12 +1451,13 @@ function groupIds(){const G=T.groups||6,ids=[];for(let g=1;g<=G;g++)ids.push('g'
 function gLabel(id){const t=(T.teams||{})[id];return t&&t.group?`${t.group}모둠`:(t&&t.team)||id.replace('g','')+'모둠'}
 function logsOf(id){return Object.values((T.logs||{})[id]||{}).filter(Boolean).sort((a,b)=>b.ts-a.ts)}
 function typingOf(id){const tt=((T.shared||{})[id]||{}).t||{},out=[];for(const [key,devs] of Object.entries(tt))for(const o of Object.values(devs||{}))if(o&&Date.now()-(o.ts||0)<9000)out.push(`${o.name}: '${((SHARED.find(x=>x[0]===key)||[])[1]||'').replace(/^\S+\s/,'')}'`);return out}
+function tLocked(id){const c=T.ctrl||{},t=(T.teams||{})[id]||{};return !!((c.lockTeam||{})[id]||(t.device&&(c.lockDev||{})[t.device])||Object.keys((T.helpers||{})[id]||{}).some(d=>(c.lockDev||{})[d]))}
 function drawLive(){const box=$('#liveGrid');if(!box)return;
   box.innerHTML=groupIds().map(id=>{const t=(T.teams||{})[id],L=(T.live||{})[id],hl=activeHelpers((T.helpers||{})[id]);
     if(!t&&!L&&!hl.length)return `<div class="live off"><div class="lh"><b>${gLabel(id)}</b><span class="ldot"></span></div><div class="lframe empty">아직 입장 전</div></div>`;
     const fresh=L&&Date.now()-(L.ts||0)<20000,st=STEPS[(L&&L.step!=null?L.step:t&&t.step)||0];
     const hq=(t&&t.members||'').split(',')[0].trim()||'본부',ty=typingOf(id),last=logsOf(id)[0];
-    return `<button class="live ${fresh?'on':''}" data-tlive="${id}"><div class="lh"><b>${gLabel(id)}</b><small>${esc(t&&t.nick||'')}</small><span class="ldot ${fresh?'on':''}" title="${fresh?'접속 중':'쉬는 중'}"></span></div>
+    return `<button class="live ${fresh?'on':''}" data-tlive="${id}"><div class="lh"><b>${gLabel(id)}</b><small>${esc(t&&t.nick||'')}</small>${tLocked(id)?'<span class="lock" title="잠긴 기기가 있어요">🔒</span>':''}<span class="ldot ${fresh?'on':''}" title="${fresh?'접속 중':'쉬는 중'}"></span></div>
       <div class="lframe">${L&&L.frame?`<img src="${L.frame}" alt="">`:`<span>${st.e}</span>`}${L&&L.pred?`<em>AI: ${esc(L.pred.label)} ${L.pred.conf}%</em>`:''}</div>
       <div class="lstep">${st.e} ${(L&&L.step!=null?L.step:t.step)+1}단계 ${st.t}${t&&t.name?` · ${esc(t.emoji||'')} ${esc(t.name)}`:''}</div>
       <div class="ldev"><span class="hq">💻 ${esc(hq)}: ${fresh?esc(L.act||''):'쉬는 중'}</span>${hl.map(x=>{const o=(T.helpers[id]||{})[x.dev]||{};return `<span>🤝 ${esc(x.name)}: ${esc(o.act||'함께하는 중')}</span>`}).join('')}</div>
@@ -1442,22 +1465,32 @@ function drawLive(){const box=$('#liveGrid');if(!box)return;
       ${last?`<div class="llog">${esc(last.who)} · ${esc(last.act)} <small>${ago(last.ts)}</small></div>`:''}</button>`}).join('');
   if(liveOpen)drawLiveDetail()}
 function drawFeed(){const f=$('#feed');if(!f)return;const all=[];for(const id of Object.keys(T.logs||{}))for(const l of logsOf(id))all.push({...l,id});all.sort((a,b)=>b.ts-a.ts);
-  f.innerHTML=all.length?all.slice(0,60).map(l=>`<div class="fi"><span class="fg">${gLabel(l.id)}</span><b>${esc(l.who)}</b><span class="fr">${l.role==='helper'?'도우미':'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join(''):'<div class="empty" style="padding:14px">아직 기록이 없어요. 학생들이 활동을 시작하면 여기에 쌓여요.</div>'}
+  f.innerHTML=all.length?all.slice(0,60).map(l=>`<div class="fi"><span class="fg">${gLabel(l.id)}</span><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join(''):'<div class="empty" style="padding:14px">아직 기록이 없어요. 학생들이 활동을 시작하면 여기에 쌓여요.</div>'}
 function clock(ts){const d=new Date(ts);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`}
+function devPanelHTML(id,t,L,hl,keepStep){const c=T.ctrl||{},LD=c.lockDev||{},teamLk=!!(c.lockTeam||{})[id],hq=(t.members||'').split(',')[0].trim()||'본부';
+  const lkBtn=(dev,name)=>`<button class="btn sm ${LD[dev]?'pri':'ghost'}" data-tlockdev="${esc(dev)}|${id}|${esc(name)}">${LD[dev]?'🔓 잠금 풀기':'🔒 잠그기'}</button>`;
+  const hqOn=t.device&&Date.now()-(t.updatedAt||0)<ACTIVE_MS;
+  return `<div class="devs"><h3>🎛️ 기기 관리</h3>
+  ${t.device?`<div class="dv"><span>💻 <b>본부</b> ${esc(hq)} <small>${hqOn?'사용 중':'쉬는 중'}</small>${LD[t.device]?'<em>🔒 잠김</em>':''}</span><span class="dva">${lkBtn(t.device,hq+'(본부)')}<button class="btn sm ghost" data-trelease="${esc(id)}">🔌 연결 풀기</button></span></div>`:'<div class="dv"><span>⚪ 본부 기기 없음 <small>학생이 모둠을 골라 들어오면 본부가 돼요</small></span></div>'}
+  ${hl.map(x=>`<div class="dv"><span>🤝 <b>${esc(x.name)}</b> <small>${esc(((T.helpers[id]||{})[x.dev]||{}).act||'함께하는 중')}</small>${LD[x.dev]?'<em>🔒 잠김</em>':''}</span><span class="dva">${lkBtn(x.dev,x.name)}<button class="btn sm ghost" data-tpromote="${id}|${esc(x.dev)}|${esc(x.name)}">👑 본부로 바꾸기</button></span></div>`).join('')||'<div class="dv"><span>🤝 도우미 기기 없음</span></div>'}
+  <div class="dv grp"><button class="btn sm ${teamLk?'pri':''}" data-tlockteam="${id}">${teamLk?'🔓 모둠 전체 잠금 풀기':'🔒 모둠 기기 모두 잠그기'}</button>
+  <span class="dva"><select id="ldGoto">${STEPS.map((s,i)=>`<option value="${i}" ${i===keepStep?'selected':''}>${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgotoone="${id}">이 모둠만 이동</button></span></div></div>`}
 function drawLiveDetail(){let o=$('#liveDetail');const id=liveOpen;if(!id){if(o)o.remove();return}
   if(!o){o=document.createElement('div');o.id='liveDetail';o.className='overlay';document.body.appendChild(o)}
   const t=(T.teams||{})[id]||{},L=(T.live||{})[id],f=((T.shared||{})[id]||{}).f||{},hl=activeHelpers((T.helpers||{})[id]);
-  const st=STEPS[(L&&L.step!=null?L.step:t.step)||0];
+  const st=STEPS[(L&&L.step!=null?L.step:t.step)||0];const ks=$('#ldGoto'),keepStep=ks?+ks.value:((L&&L.step!=null?L.step:t.step)||0);
   o.innerHTML=`<div class="ov-head"><h2>📡 ${gLabel(id)} ${esc(t.nick||'')} <small>${esc(t.members||'')}</small></h2><button class="btn" data-tliveclose>닫기 ✕</button></div>
   <div class="ld-grid"><div><div class="ld-frame">${L&&L.frame?`<img src="${L.frame}" alt="">`:`<span>${st.e}</span>`}</div>
     <p class="lead">${st.e} ${(L&&L.step!=null?L.step:t.step||0)+1}단계 ${st.t} · ${esc((L&&L.act)||'')}${L&&L.pred?` · AI: ${esc(L.pred.label)} ${L.pred.conf}%`:''}</p>
-    <div class="ldev">${hl.map(x=>`<span>🤝 ${esc(x.name)}: ${esc(((T.helpers[id]||{})[x.dev]||{}).act||'')}</span>`).join('')||'<span>도우미 기기 없음</span>'}</div>
+    ${devPanelHTML(id,t,L,hl,keepStep)}
     <h3>✏️ 함께 쓰기 내용</h3><div class="ld-fields">${SHARED.map(([key,label])=>{const v=f[key];return `<div><b>${label}</b><p>${v&&v.v?esc(v.v):'<span class="hint">(아직 비어 있어요)</span>'}</p>${v&&v.v?`<small>${esc(v.name||'')} · ${ago(v.ts)}</small>`:''}</div>`}).join('')}</div></div>
-  <div><h3>📜 ${gLabel(id)} 활동 기록</h3><div class="feed tall">${logsOf(id).map(l=>`<div class="fi"><b>${esc(l.who)}</b><span class="fr">${l.role==='helper'?'도우미':'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join('')||'<div class="empty">아직 기록이 없어요.</div>'}</div></div></div>`}
+  <div><h3>📜 ${gLabel(id)} 활동 기록</h3><div class="feed tall">${logsOf(id).map(l=>`<div class="fi"><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join('')||'<div class="empty">아직 기록이 없어요.</div>'}</div></div></div>`}
 
+let tGotoSel=new Set(),tGotoStep=0;
+function tLog(id,act){try{cRef(T.code,'logs/'+id).push().set({ts:Date.now(),who:'선생님',role:'teacher',act})}catch(e){}}
 function drawCtrl(){const p=$('#ctrlPanel');if(!p)return;const c=T.ctrl||{};const keepMsg=$('#cpMsg')?.value,keepLbl=$('#cpTLabel')?.value;
   p.innerHTML=`<div class="cp"><b>🔓 열어 둘 단계</b><div class="chips">${[['제한 없음',-1],...STEPS.map((s,i)=>[`${i+1}단계`,i])].map(([l,v])=>`<button data-tmax="${v}" class="${(c.maxStep==null?-1:c.maxStep)===v?'on':''}">${l}${v>=0?'까지':''}</button>`).join('')}</div><small>잠긴 단계는 학생 화면에 🔒로 보이고 넘어갈 수 없어요.</small></div>
-  <div class="cp"><b>➡️ 다 함께 이동</b><div class="row"><select id="cpGoto">${STEPS.map((s,i)=>`<option value="${i}">${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgoto>모두 이동</button></div><small>모든 모둠 화면이 그 단계로 바로 바뀌어요.</small></div>
+  <div class="cp"><b>➡️ 단계 이동</b><div class="chips" id="cpGotoG"><button data-tgg="all" class="${tGotoSel.size?'':'on'}">모든 모둠</button>${groupIds().map(id=>`<button data-tgg="${id}" class="${tGotoSel.has(id)?'on':''}">${gLabel(id)}</button>`).join('')}</div><div class="row"><select id="cpGoto">${STEPS.map((s,i)=>`<option value="${i}" ${i===tGotoStep?'selected':''}>${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgoto>${tGotoSel.size?`고른 ${tGotoSel.size}개 모둠 이동`:'모두 이동'}</button></div><small>모둠을 고르면 그 모둠만, 안 고르면 모든 모둠 화면이 그 단계로 바로 바뀌어요.</small></div>
   <div class="cp"><b>👀 화면 집중</b><div class="row"><input type="text" id="cpMsg" placeholder="학생 화면에 띄울 말 (선택)"><button class="btn sm ${c.freeze?.on?'pri':''}" data-tfreeze>${c.freeze?.on?'▶️ 집중 끝내기':'⏸️ 모두 화면 멈추기'}</button></div><small>${c.freeze?.on?'🔴 지금 학생 화면이 멈춰 있어요.':'설명할 때 학생 화면에 "선생님을 봐 주세요"가 떠요.'}</small></div>
   <div class="cp"><b>📷 실시간 화면 미리보기</b><label class="row" style="font-size:14px"><input type="checkbox" id="cpLiveCam" ${c.liveCam!==false?'checked':''}> 학생 카메라·소리 화면을 현황판에 보여 주기</label><small>끄면 학생 기기가 화면 이미지를 보내지 않아요. 단계·활동·기록은 그대로 보여요.</small></div>
   <div class="cp"><b>⏱️ 활동 타이머</b><div class="row"><input type="text" id="cpTLabel" placeholder="활동 이름 (예: AI 가르치기)">${[3,5,7,10,15].map(m=>`<button class="btn sm ghost" data-ttimer="${m}">${m}분</button>`).join('')}</div><small id="cpTLeft">${c.timer?.end?'':'학생 화면 왼쪽 아래에 남은 시간이 보여요.'}</small>${c.timer?.end?'<button class="btn sm ghost" data-ttimerstop>타이머 끄기</button>':''}</div>`;
@@ -1484,7 +1517,7 @@ function printCards(which){const cards=Object.entries(T.cards).map(([id,d])=>({.
 async function openDash(code){
   await fbInit();offAll(tRefs);T={code,meta:null,open:true,teams:{},cards:{},reqs:{}};
   const mr=cRef(code,'meta'),orf=cRef(code,'open'),tr=cRef(code,'teams'),cr=cRef(code,'cards');const rr=cRef(code,'requests'),gr=cRef(code,'groups'),ctr=cRef(code,'ctrl');tRefs.push(mr,orf,tr,cr,rr,gr,ctr);
-  ctr.on('value',s=>{T.ctrl=s.val()||{};const vmEl=$('#tViewMode');if(vmEl)vmEl.checked=!!T.ctrl.viewMode;drawCtrl()});
+  ctr.on('value',s=>{T.ctrl=s.val()||{};const vmEl=$('#tViewMode');if(vmEl)vmEl.checked=!!T.ctrl.viewMode;drawCtrl();drawLive()});
   gr.on('value',s=>{T.groups=s.val()||6;const e=$('#tG');if(e)e.textContent=T.groups;drawDash()});
   rr.on('value',s=>{T.reqs=s.val()||{};drawDash()});
   mr.on('value',s=>{const first=!T.meta;T.meta=s.val();const e=$('#tTitle');if(e)e.textContent=T.meta?.name||'';if(first&&T.meta?.kind==='training')renderTeacher()});
@@ -1696,7 +1729,7 @@ document.addEventListener('click',async e=>{
     resetKnn();clearDataset();endBias();
     Object.assign(S,{idea:null,rounds:[],sense:x.s||'image',testLog:[],mistakes:[],missions:{},name:x.name,emoji:x.e,place:x.place,who:x.who,when:x.when,what:x.what,problem:'',savedThumbs:{},test:{ok:0,ng:0},drawing:'',drawingLayer:'',parts:[],aiImage:'',ai:null,
       classes:x.cls.map(c=>mk(...c))});save();toast(`"${x.name}"로 시작해요!`);go(S.kind==='training'?3:1);return}
-  if(t.hasAttribute('data-reset')){if(!confirm('지금까지 만든 내용을 모두 지우고 새로 시작할까요?'))return;resetKnn();clearDataset();endBias();const keep={classCode:S.classCode,className:S.className,teamId:S.teamId,solo:S.solo,group:S.group,nick:S.nick,team:S.group?`${S.group}모둠`:'',kind:S.kind,gotoSeen:S.gotoSeen};S=Object.assign(fresh(),keep);save();render();return}
+  if(t.hasAttribute('data-reset')){if(!confirm('지금까지 만든 내용을 모두 지우고 새로 시작할까요?'))return;resetKnn();clearDataset();endBias();const keep={classCode:S.classCode,className:S.className,teamId:S.teamId,solo:S.solo,group:S.group,nick:S.nick,team:S.group?`${S.group}모둠`:'',kind:S.kind,gotoSeen:S.gotoSeen,gotoTSeen:S.gotoTSeen};S=Object.assign(fresh(),keep);save();render();return}
   if(t.hasAttribute('data-addcls')){S.classes.push(mk('⭐','',''));save();render();return}
   if(t.hasAttribute('data-addbg')){S.classes.push(sense()==='sound'?mk('🤫','조용함','','none'):mk('🫥','아무것도 없음','','none'));save();render();return}
   if(t.dataset.sense){const s=t.dataset.sense;if(s===sense())return;const has=(knn&&Object.keys(knn.getClassExampleCount()).length)||S.dataSaved;if(has&&!confirm('AI의 감각을 바꾸면 지금까지 가르친 내용이 지워져요. 바꿀까요?'))return;resetKnn();clearDataset();endBias();S.sense=s;S.savedThumbs={};S.rounds=[];S.test={ok:0,ng:0};S.testLog=[];S.mistakes=[];S.missions={};save();render();toast(`${SN(s).e} ${SN(s).t}로 정했어요!`);return}
@@ -1782,7 +1815,19 @@ document.addEventListener('click',async e=>{
   if(t.dataset.tgsel){tGrpSel=+t.dataset.tgsel;document.querySelectorAll('#tGrpPick button').forEach(b=>b.classList.toggle('on',b===t));return}
   if(t.dataset.tgrp){const v=Math.max(1,Math.min(20,(T.groups||6)+(+t.dataset.tgrp)));cRef(T.code,'groups').set(v);return}
   if(t.dataset.tmax!=null){const v=+t.dataset.tmax;cRef(T.code,'ctrl/maxStep').set(v<0?null:v);return}
-  if(t.hasAttribute('data-tgoto')){const v=+$('#cpGoto').value;cRef(T.code,'ctrl/goto').set({step:v,ts:Date.now()});toast(`모든 모둠을 ${v+1}단계로 이동시켰어요.`);return}
+  if(t.dataset.tgg){const id=t.dataset.tgg;if(id==='all')tGotoSel.clear();else tGotoSel.has(id)?tGotoSel.delete(id):tGotoSel.add(id);tGotoStep=+($('#cpGoto')?.value||0);drawCtrl();return}
+  if(t.hasAttribute('data-tgoto')){const v=+$('#cpGoto').value,ts=Date.now();
+    if(tGotoSel.size){const up={},ids=[...tGotoSel];ids.forEach(id=>{up['gotoT/'+id]={step:v,ts}});cRef(T.code,'ctrl').update(up);ids.forEach(id=>tLog(id,`➡️ ${v+1}단계로 이동시켰어요`));toast(`${ids.map(gLabel).join(', ')}을 ${v+1}단계로 이동시켰어요.`);tGotoSel.clear();drawCtrl()}
+    else{cRef(T.code,'ctrl/goto').set({step:v,ts});toast(`모든 모둠을 ${v+1}단계로 이동시켰어요.`)}return}
+  if(t.dataset.tgotoone){const id=t.dataset.tgotoone,v=+($('#ldGoto')?.value||0);cRef(T.code,'ctrl/gotoT/'+id).set({step:v,ts:Date.now()});tLog(id,`➡️ ${v+1}단계로 이동시켰어요`);toast(`${gLabel(id)}을 ${v+1}단계로 이동시켰어요.`);return}
+  if(t.dataset.tlockdev){const [dev,id,...nm]=t.dataset.tlockdev.split('|'),name=nm.join('|'),on=!!((T.ctrl||{}).lockDev||{})[dev];
+    cRef(T.code,'ctrl/lockDev/'+dev).set(on?null:{team:id,name,ts:Date.now()});tLog(id,on?`🔓 ${name} 기기 잠금을 풀었어요`:`🔒 ${name} 기기를 잠갔어요`);toast(on?`${name} 기기 잠금을 풀었어요.`:`${name} 기기를 잠갔어요.`);return}
+  if(t.dataset.tlockteam){const id=t.dataset.tlockteam,on=!!((T.ctrl||{}).lockTeam||{})[id];
+    cRef(T.code,'ctrl/lockTeam/'+id).set(on?null:{ts:Date.now()});tLog(id,on?'🔓 모둠 전체 잠금을 풀었어요':'🔒 모둠 기기를 모두 잠갔어요');toast(on?`${gLabel(id)} 잠금을 풀었어요.`:`${gLabel(id)} 기기를 모두 잠갔어요.`);return}
+  if(t.dataset.tpromote){const [id,dev,...nm]=t.dataset.tpromote.split('|'),name=nm.join('|'),cur=((T.teams||{})[id]||{}).device||null;
+    if(!confirm(`${gLabel(id)}의 본부 기기를 '${name}' 기기로 바꿀까요?\n\n· 지금 본부 기기가 켜져 있으면 마지막 기록을 넘겨주고 연결이 멈춰요.\n· 지금 본부 기기가 꺼져 있으면 학급 서버에 마지막으로 백업된 기록으로 이어서 해요.\n· AI 학습 자료는 백업된 자료(종류마다 최대 40개)로 옮겨져요.`))return;
+    await cRef(T.code,'teams/'+id+'/promoted').set({dev,from:cur,ts:Date.now()});await cRef(T.code,'teams/'+id+'/device').set(dev);
+    if(((T.ctrl||{}).lockDev||{})[dev])cRef(T.code,'ctrl/lockDev/'+dev).set(null);tLog(id,`👑 '${name}' 기기를 본부로 바꿨어요`);toast(`'${name}' 기기가 새 본부가 돼요. 몇 초 걸려요.`);return}
   if(t.hasAttribute('data-tfreeze')){const on=!(T.ctrl?.freeze?.on);cRef(T.code,'ctrl/freeze').set({on,msg:$('#cpMsg').value.trim()});return}
   if(t.dataset.ttimer){const m=+t.dataset.ttimer;cRef(T.code,'ctrl/timer').set({end:Date.now()+m*60000,label:$('#cpTLabel').value.trim()});toast(`${m}분 타이머를 시작했어요.`);return}
   if(t.hasAttribute('data-ttimerstop')){cRef(T.code,'ctrl/timer').remove();return}
