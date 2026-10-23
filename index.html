@@ -1481,18 +1481,24 @@ function devPanelHTML(id,t,L,hl,keepStep){const c=T.ctrl||{},LD=c.lockDev||{},te
   ${hl.map(x=>`<div class="dv"><span>🤝 <b>${esc(x.name)}</b> <small>${esc(((T.helpers[id]||{})[x.dev]||{}).act||'함께하는 중')}</small>${LD[x.dev]?'<em>🔒 잠김</em>':''}</span><span class="dva">${lkBtn(x.dev,x.name)}<button class="btn sm ghost" data-tpromote="${id}|${esc(x.dev)}|${esc(x.name)}">👑 본부로 바꾸기</button></span></div>`).join('')||'<div class="dv"><span>🤝 도우미 기기 없음</span></div>'}
   <div class="dv grp"><button class="btn sm ${teamLk?'pri':''}" data-tlockteam="${id}">${teamLk?'🔓 모둠 전체 잠금 풀기':'🔒 모둠 기기 모두 잠그기'}</button>
   <span class="dva"><select id="ldGoto">${STEPS.map((s,i)=>`<option value="${i}" ${i===keepStep?'selected':''}>${i+1}단계 ${s.e} ${s.t}</option>`).join('')}</select><button class="btn sm pri" data-tgotoone="${id}">이 모둠만 이동</button></span></div></div>`}
+document.addEventListener('mouseout',e=>{const dv=$('#ldDev');if(dv&&dv._pending&&!dv.matches(':hover')&&!(dv.contains(document.activeElement)&&document.activeElement.tagName==='SELECT')){const h=dv._pending;dv._pending=null;setHTML(dv,h)}});
+function setHTML(el,h){if(el&&el._h!==h){el._h=h;el.innerHTML=h}}
 function drawLiveDetail(){let o=$('#liveDetail');const id=liveOpen;if(!id){if(o)o.remove();return}
   if(!o){o=document.createElement('div');o.id='liveDetail';o.className='overlay';document.body.appendChild(o)}
+  if(o.dataset.id!==id){o.dataset.id=id;o.innerHTML=`<div class="ov-head"><h2 id="ldHead"></h2><button class="btn" data-tliveclose>닫기 ✕</button></div>
+  <div class="ld-grid"><div><div id="ldTop"></div><div id="ldDev"></div><h3>✏️ 함께 쓰기 내용</h3><div class="ld-fields" id="ldFields"></div></div>
+  <div><h3 id="ldFeedH"></h3><div class="feed tall" id="ldFeed"></div></div></div>`}
   const t=(T.teams||{})[id]||{},L=(T.live||{})[id],f=((T.shared||{})[id]||{}).f||{},hl=activeHelpers((T.helpers||{})[id]);
-  const st=STEPS[(L&&L.step!=null?L.step:t.step)||0];const ks=$('#ldGoto'),keepStep=ks?+ks.value:((L&&L.step!=null?L.step:t.step)||0);
-  const _f=o.querySelector('.feed.tall'),_st=_f?_f.scrollTop:0,_sh=_f?_f.scrollHeight:0;
-  o.innerHTML=`<div class="ov-head"><h2>📡 ${gLabel(id)} ${esc(t.nick||'')} <small>${esc(t.members||'')}</small></h2><button class="btn" data-tliveclose>닫기 ✕</button></div>
-  <div class="ld-grid"><div><div class="ld-frame">${L&&L.frame?`<img src="${L.frame}" alt="">`:`<span>${st.e}</span>`}</div>
-    <p class="lead">${st.e} ${(L&&L.step!=null?L.step:t.step||0)+1}단계 ${st.t} · ${esc((L&&L.act)||'')}${L&&L.pred?` · AI: ${esc(L.pred.label)} ${L.pred.conf}%`:''}</p>
-    ${devPanelHTML(id,t,L,hl,keepStep)}
-    <h3>✏️ 함께 쓰기 내용</h3><div class="ld-fields">${SHARED.map(([key,label])=>{const v=f[key];return `<div><b>${label}</b><p>${v&&v.v?esc(v.v):'<span class="hint">(아직 비어 있어요)</span>'}</p>${v&&v.v?`<small>${esc(v.name||'')} · ${ago(v.ts)}</small>`:''}</div>`}).join('')}</div></div>
-  <div><h3>📜 ${gLabel(id)} 활동 기록</h3><div class="feed tall">${logsOf(id).map(l=>`<div class="fi"><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join('')||'<div class="empty">아직 기록이 없어요.</div>'}</div></div></div>`;
-  const nf=o.querySelector('.feed.tall');if(nf&&_st>0)nf.scrollTop=_st+Math.max(0,nf.scrollHeight-_sh)}
+  const cur=(L&&L.step!=null?L.step:t.step)||0,st=STEPS[cur];const ks=$('#ldGoto'),keepStep=ks?+ks.value:cur;
+  setHTML($('#ldHead'),`📡 ${gLabel(id)} ${esc(t.nick||'')} <small>${esc(t.members||'')}</small>`);
+  setHTML($('#ldTop'),`<div class="ld-frame">${L&&L.frame?`<img src="${L.frame}" alt="">`:`<span>${st.e}</span>`}</div>
+    <p class="lead">${st.e} ${cur+1}단계 ${st.t} · ${esc((L&&L.act)||'')}${L&&L.pred?` · AI: ${esc(L.pred.label)} ${L.pred.conf}%`:''}</p>`);
+  const dv=$('#ldDev'),busy=dv&&(dv.matches(':hover')||(dv.contains(document.activeElement)&&document.activeElement.tagName==='SELECT'));const dh=devPanelHTML(id,t,L,hl,keepStep);if(!busy||!dv._h)setHTML(dv,dh);else dv._pending=dh;
+  setHTML($('#ldFields'),SHARED.map(([key,label])=>{const v=f[key];return `<div><b>${label}</b><p>${v&&v.v?esc(v.v):'<span class="hint">(아직 비어 있어요)</span>'}</p>${v&&v.v?`<small>${esc(v.name||'')} · ${ago(v.ts)}</small>`:''}</div>`}).join(''));
+  setHTML($('#ldFeedH'),`📜 ${gLabel(id)} 활동 기록`);
+  const fe=$('#ldFeed'),_st=fe.scrollTop,_sh=fe.scrollHeight;
+  setHTML(fe,logsOf(id).map(l=>`<div class="fi"><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join('')||'<div class="empty">아직 기록이 없어요.</div>');
+  if(_st>0)fe.scrollTop=_st+Math.max(0,fe.scrollHeight-_sh)}
 
 let tGotoSel=new Set(),tGotoStep=0;
 function tLog(id,act){try{cRef(T.code,'logs/'+id).push().set({ts:Date.now(),who:'선생님',role:'teacher',act})}catch(e){}}
