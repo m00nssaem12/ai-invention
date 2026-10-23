@@ -1395,11 +1395,11 @@ function drawHelperCounts(){const box=$('#hCollect');if(!box||!HT)return;const s
     <div class="bar"><i style="width:${Math.min(100,n/30*100)}%;background:${colorOf(i)}"></i></div>
     <div class="acts"><button class="btn sm hold" style="background:${colorOf(i)};border-color:${colorOf(i)};color:#fff" data-hhold="${esc(c.id)}" ${ok?'':'disabled'}>${SN(s).hold}</button><span class="mine">내가 보낸 ${mine}${SN(s).unit}</span></div></div>`}).join('')}
 async function helperCapture(cid){if(hcapBusy||!HS||!HT)return;hcapBusy=true;const s=HT.sense;try{const f=await extract(s);if(!f)return;const arr=f.dataSync().slice();f.dispose();
-  const enc=encodeRaw({x:{shape:[1,arr.length],data:arr}}).x;await cRef(HS.code,'inbox/'+HS.teamId).push().set({cls:cid,enc,thumb:makeThumb(s),by:HS.name,dev:DEVICE_ID,sense:s,model:tagOf(s),ts:Date.now()});
+  const enc=encodeRaw({x:{shape:[1,arr.length],data:arr}}).x;await Promise.race([cRef(HS.code,'inbox/'+HS.teamId).push().set({cls:cid,enc,thumb:makeThumb(s),by:HS.name,dev:DEVICE_ID,sense:s,model:tagOf(s),ts:Date.now()}),new Promise(r=>setTimeout(r,2500))]);
   HS.sent=HS.sent||{};HS.sent[cid]=(HS.sent[cid]||0)+1;saveHS()}catch(e){}finally{hcapBusy=false}}
 function startHelperHold(cid,btn){if(!HT||!ready[HT.sense]||!mediaOn(HT.sense))return;hHoldCid=cid;hHoldStart=(HS.sent||{})[cid]||0;btn.classList.add('rec');const tick=async()=>{await helperCapture(cid);if(hHoldT)btn.textContent=`📤 보내는 중… ${(HS.sent||{})[cid]||0}${SN(HT.sense).unit}`};tick();hHoldT=setInterval(tick,SN(HT.sense).iv+60)}
 let hHoldCid=null,hHoldStart=0;
-function endHelperHold(){if(hHoldT){clearInterval(hHoldT);hHoldT=null;const n=((HS.sent||{})[hHoldCid]||0)-hHoldStart,c=((HT&&HT.classes)||[]).find(x=>x.id===hHoldCid);if(n>0)logAct(`${c?c.emoji+' '+c.name:''} 자료 ${n}${SN(HT.sense).unit}${josaEul(SN(HT.sense).unit)} 본부로 보냈어요`);drawHelperCounts();helperBeat()}}
+function endHelperHold(){if(hHoldT){clearInterval(hHoldT);hHoldT=null;const n=((HS.sent||{})[hHoldCid]||0)-hHoldStart,c=((HT&&HT.classes)||[]).find(x=>x.id===hHoldCid);if(n>0)logAct(`${c?c.emoji+' '+c.name:''} 자료 ${n}${SN(HT.sense).unit}${josaEul(SN(HT.sense).unit)} 본부로 보냈어요`);document.querySelectorAll('[data-hhold]').forEach(b=>{b.classList.remove('rec');if(HT)b.textContent=SN(HT.sense).hold});drawHelperCounts();helperBeat()}}
 
 /* ---------- 선생님 현황판 ---------- */
 let mode=location.hash==='#teacher'?'teacher':location.hash==='#view'?'view':'student';
@@ -2192,6 +2192,9 @@ function upRules(){const r=$('#rulePrev');if(r)r.innerHTML=rulesText()}
 function upCard(){const p=$('#cardPrev');if(p)p.innerHTML=cardHTML(cardData())}
 document.addEventListener('pointerdown',e=>{const hb=e.target.closest('[data-hhold]');if(hb&&!hb.disabled){e.preventDefault();hb.setPointerCapture?.(e.pointerId);startHelperHold(hb.dataset.hhold,hb);return}const b=e.target.closest('[data-hold]');if(!b||b.disabled)return;e.preventDefault();b.setPointerCapture?.(e.pointerId);startHold(b.dataset.hold,b)});
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>document.addEventListener(ev,e=>{if(holdT&&(ev!=='pointerleave'||e.target.closest?.('[data-hold]')))endHold();if(hHoldT&&(ev!=='pointerleave'||e.target.closest?.('[data-hhold]')))endHelperHold()},true));
+window.addEventListener('blur',()=>{if(holdT)endHold();if(hHoldT)endHelperHold()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(holdT)endHold();if(hHoldT)endHelperHold()}});
+document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('[data-hhold],[data-hold]'))e.preventDefault()});
 document.addEventListener('focusin',e=>{const k=sharedKeyOf(e.target);if(k)setTyping(k,true)});
 document.addEventListener('focusout',e=>{const k=sharedKeyOf(e.target);if(k)setTyping(k,false)});
 window.addEventListener('blur',endHold);
