@@ -1310,6 +1310,10 @@ function drawHelperBody(full){const b=$('#hBody');if(!b||!HS)return;const tab=HS
   drawHelperCounts();
   mountMedia(s).then(async()=>{const st=$('#hStatus');if(st)st.textContent=`🧠 ${SN(s).t} 준비 중…`;try{await ensureExtractor(s);if($('#hStatus'))$('#hStatus').textContent='🧠 준비 완료! 버튼을 꾹 누르면 본부로 자료가 날아가요.';drawHelperCounts();startPreview(s)}catch(e){if($('#hStatus'))$('#hStatus').textContent='⚠️ AI를 불러오지 못했어요. 인터넷을 확인해 주세요.'}})}
 function drawHelperCounts(){const box=$('#hCollect');if(!box||!HT)return;const s=HT.sense;const ok=ready[s]&&mediaOn(s);
+  const sig=JSON.stringify([s,ok,(HT.classes||[]).map(c=>c.id+'|'+c.name+'|'+c.emoji)]);
+  if(box.dataset.sig===sig){(HT.classes||[]).forEach((c,i)=>{const col=box.children[i];if(!col)return;const n=c.count||0,mine=(HS.sent||{})[c.id]||0;
+    const ct=col.querySelector('.cnt');if(ct)ct.textContent=`본부 ${n}${SN(s).unit}`;const b=col.querySelector('.bar i');if(b)b.style.width=Math.min(100,n/30*100)+'%';const m=col.querySelector('.mine');if(m)m.textContent=`내가 보낸 ${mine}${SN(s).unit}`});return}
+  box.dataset.sig=sig;
   box.innerHTML=(HT.classes||[]).map((c,i)=>{const n=c.count||0,mine=(HS.sent||{})[c.id]||0;return `<div class="col" style="border-left-color:${colorOf(i)}">
     <div class="hd"><span style="font-size:24px">${esc(c.emoji)}</span><span class="nm">${esc(c.name)}</span><span class="cnt">본부 ${n}${SN(s).unit}</span></div>
     <div class="bar"><i style="width:${Math.min(100,n/30*100)}%;background:${colorOf(i)}"></i></div>
@@ -1319,7 +1323,7 @@ async function helperCapture(cid){if(hcapBusy||!HS||!HT)return;hcapBusy=true;con
   HS.sent=HS.sent||{};HS.sent[cid]=(HS.sent[cid]||0)+1;saveHS()}catch(e){}finally{hcapBusy=false}}
 function startHelperHold(cid,btn){if(!HT||!ready[HT.sense]||!mediaOn(HT.sense))return;hHoldCid=cid;hHoldStart=(HS.sent||{})[cid]||0;btn.classList.add('rec');const tick=async()=>{await helperCapture(cid);if(hHoldT)btn.textContent=`📤 보내는 중… ${(HS.sent||{})[cid]||0}${SN(HT.sense).unit}`};tick();hHoldT=setInterval(tick,SN(HT.sense).iv+60)}
 let hHoldCid=null,hHoldStart=0;
-function endHelperHold(){if(hHoldT){clearInterval(hHoldT);hHoldT=null;const n=((HS.sent||{})[hHoldCid]||0)-hHoldStart,c=((HT&&HT.classes)||[]).find(x=>x.id===hHoldCid);if(n>0)logAct(`${c?c.emoji+' '+c.name:''} 자료 ${n}${SN(HT.sense).unit}를 본부로 보냈어요`);drawHelperCounts();helperBeat()}}
+function endHelperHold(){if(hHoldT){clearInterval(hHoldT);hHoldT=null;const n=((HS.sent||{})[hHoldCid]||0)-hHoldStart,c=((HT&&HT.classes)||[]).find(x=>x.id===hHoldCid);if(n>0)logAct(`${c?c.emoji+' '+c.name:''} 자료 ${n}${SN(HT.sense).unit}${josaEul(SN(HT.sense).unit)} 본부로 보냈어요`);drawHelperCounts();helperBeat()}}
 
 /* ---------- 선생님 현황판 ---------- */
 let mode=location.hash==='#teacher'?'teacher':location.hash==='#view'?'view':'student';
@@ -1466,7 +1470,7 @@ function drawLive(){const box=$('#liveGrid');if(!box)return;
       ${ty.length?`<div class="ltype">✍️ ${ty.map(esc).join(' · ')} 쓰는 중</div>`:''}
       ${last?`<div class="llog">${esc(last.who)} · ${esc(last.act)} <small>${ago(last.ts)}</small></div>`:''}</button>`}).join('');
   if(liveOpen)drawLiveDetail()}
-function drawFeed(){const f=$('#feed');if(!f)return;const all=[];for(const id of Object.keys(T.logs||{}))for(const l of logsOf(id))all.push({...l,id});all.sort((a,b)=>b.ts-a.ts);
+function drawFeed(){const f=$('#feed');if(!f)return;const _st=f.scrollTop,_sh=f.scrollHeight;setTimeout(()=>{if(_st>0)f.scrollTop=_st+Math.max(0,f.scrollHeight-_sh)},0);const all=[];for(const id of Object.keys(T.logs||{}))for(const l of logsOf(id))all.push({...l,id});all.sort((a,b)=>b.ts-a.ts);
   f.innerHTML=all.length?all.slice(0,60).map(l=>`<div class="fi"><span class="fg">${gLabel(l.id)}</span><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join(''):'<div class="empty" style="padding:14px">아직 기록이 없어요. 학생들이 활동을 시작하면 여기에 쌓여요.</div>'}
 function clock(ts){const d=new Date(ts);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`}
 function devPanelHTML(id,t,L,hl,keepStep){const c=T.ctrl||{},LD=c.lockDev||{},teamLk=!!(c.lockTeam||{})[id],hq=(t.members||'').split(',')[0].trim()||'본부';
@@ -1481,12 +1485,14 @@ function drawLiveDetail(){let o=$('#liveDetail');const id=liveOpen;if(!id){if(o)
   if(!o){o=document.createElement('div');o.id='liveDetail';o.className='overlay';document.body.appendChild(o)}
   const t=(T.teams||{})[id]||{},L=(T.live||{})[id],f=((T.shared||{})[id]||{}).f||{},hl=activeHelpers((T.helpers||{})[id]);
   const st=STEPS[(L&&L.step!=null?L.step:t.step)||0];const ks=$('#ldGoto'),keepStep=ks?+ks.value:((L&&L.step!=null?L.step:t.step)||0);
+  const _f=o.querySelector('.feed.tall'),_st=_f?_f.scrollTop:0,_sh=_f?_f.scrollHeight:0;
   o.innerHTML=`<div class="ov-head"><h2>📡 ${gLabel(id)} ${esc(t.nick||'')} <small>${esc(t.members||'')}</small></h2><button class="btn" data-tliveclose>닫기 ✕</button></div>
   <div class="ld-grid"><div><div class="ld-frame">${L&&L.frame?`<img src="${L.frame}" alt="">`:`<span>${st.e}</span>`}</div>
     <p class="lead">${st.e} ${(L&&L.step!=null?L.step:t.step||0)+1}단계 ${st.t} · ${esc((L&&L.act)||'')}${L&&L.pred?` · AI: ${esc(L.pred.label)} ${L.pred.conf}%`:''}</p>
     ${devPanelHTML(id,t,L,hl,keepStep)}
     <h3>✏️ 함께 쓰기 내용</h3><div class="ld-fields">${SHARED.map(([key,label])=>{const v=f[key];return `<div><b>${label}</b><p>${v&&v.v?esc(v.v):'<span class="hint">(아직 비어 있어요)</span>'}</p>${v&&v.v?`<small>${esc(v.name||'')} · ${ago(v.ts)}</small>`:''}</div>`}).join('')}</div></div>
-  <div><h3>📜 ${gLabel(id)} 활동 기록</h3><div class="feed tall">${logsOf(id).map(l=>`<div class="fi"><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join('')||'<div class="empty">아직 기록이 없어요.</div>'}</div></div></div>`}
+  <div><h3>📜 ${gLabel(id)} 활동 기록</h3><div class="feed tall">${logsOf(id).map(l=>`<div class="fi"><b>${esc(l.who)}</b><span class="fr">${{helper:'도우미',teacher:'선생님'}[l.role]||'본부'}</span><span class="fa">${esc(l.act)}</span><small>${clock(l.ts)}</small></div>`).join('')||'<div class="empty">아직 기록이 없어요.</div>'}</div></div></div>`;
+  const nf=o.querySelector('.feed.tall');if(nf&&_st>0)nf.scrollTop=_st+Math.max(0,nf.scrollHeight-_sh)}
 
 let tGotoSel=new Set(),tGotoStep=0;
 function tLog(id,act){try{cRef(T.code,'logs/'+id).push().set({ts:Date.now(),who:'선생님',role:'teacher',act})}catch(e){}}
